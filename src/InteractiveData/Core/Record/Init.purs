@@ -67,7 +67,7 @@ instance
 
 ---
 
-t1
+testInitRecord
   :: Record
        ( field1 :: Opt T1 -> S1
        , field2 :: Opt T2 -> S2
@@ -83,4 +83,4 @@ t1
        , field2 :: S2
        , field3 :: S3
        )
-t1 = initRecord
+testInitRecord = initRecord
