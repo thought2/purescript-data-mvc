@@ -3,7 +3,7 @@ module InteractiveData.Core.Record.Extract where
 import Data.Either (Either)
 import Data.Symbol (class IsSymbol)
 import Heterogeneous.Mapping (class HMapWithIndex, class MappingWithIndex, hmapWithIndex)
-import InteractiveData.DataUI.Types (Error, Opt)
+import InteractiveData.Core.Types (Error, Opt)
 import InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row

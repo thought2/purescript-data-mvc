@@ -4,7 +4,7 @@ module InteractiveData.Core.Record.Init where
 import Prelude
 
 import Data.Symbol (class IsSymbol)
-import InteractiveData.DataUI.Types (Opt)
+import InteractiveData.Core.Types (Opt)
 import InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row

@@ -1,6 +1,17 @@
 { name = "interactive-data-core"
 , dependencies =
-  [ "data-mvc", "maybe", "prelude", "record-extra", "typelevel-prelude" ]
+  [ "data-mvc"
+  , "either"
+  , "heterogeneous"
+  , "identity"
+  , "maybe"
+  , "newtype"
+  , "prelude"
+  , "record"
+  , "record-extra"
+  , "typelevel-prelude"
+  , "unsafe-coerce"
+  ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs" ]
 }
