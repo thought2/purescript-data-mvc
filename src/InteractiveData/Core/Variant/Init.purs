@@ -16,7 +16,7 @@ import Record as Record
 import Type.Proxy (Proxy(..))
 
 class InitVariant :: Row Type -> Symbol -> Row Type -> Row Type -> Constraint
-class InitVariant inits initsym r rsta where
+class InitVariant inits initsym r rsta | inits initsym -> r rsta where
   initVariant :: Record inits -> Proxy initsym -> Opt (Variant r) -> VariantState rsta
 
 instance
