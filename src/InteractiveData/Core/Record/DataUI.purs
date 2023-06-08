@@ -1,10 +1,14 @@
-module InteractiveData.Core.Record.UI where
+module InteractiveData.Core.Record.DataUI where
 
+import Prelude
+
+import Data.Newtype (class Newtype)
+import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
 import InteractiveData.Core.Record.Extract (class ExtractRecord, extractRecord)
 import InteractiveData.Core.Record.Init (class InitRecord, initRecord)
-import InteractiveData.Core.Types (UI)
+import InteractiveData.Core.Types (DataUI(..))
 import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
 import MVC.Record (class UpdateRecord, class ViewRecord, RecordMsg, RecordState, updateRecord, viewRecord)
 import MVC.Record.UI (UIRecordProps)
@@ -12,11 +16,11 @@ import Prim.Row as Row
 import Record as Record
 import Type.Proxy (Proxy(..))
 
-class UIRecord uis srf rmsg rsta r where
-  uiRecord
+class DataUIRecord uis srf rmsg rsta r where
+  dataUiRecord
     :: Record uis
     -> UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
-    -> UI srf (RecordMsg rmsg) (RecordState rsta) (Record r)
+    -> DataUI srf (RecordMsg rmsg) (RecordState rsta) (Record r)
 
 instance
   ( MapProp "extract" uis extracts
@@ -29,9 +33,9 @@ instance
   , ViewRecord srf views rmsg rsta
   , ExtractRecord extracts rsta r
   ) =>
-  UIRecord uis srf rmsg rsta r
+  DataUIRecord uis srf rmsg rsta r
   where
-  uiRecord uis props = { init, update, view, extract, name }
+  dataUiRecord uis props = DataUI { init, update, view, extract, name }
 
     where
     init = initRecord inits
@@ -52,11 +56,11 @@ instance
 
 ---
 
-testUIRecord
+testDataUiRecord
   :: Record
-       ( field1 :: UI HTML M1 S1 T1
-       , field2 :: UI HTML M2 S2 T2
-       , field3 :: UI HTML M3 S3 T3
+       ( field1 :: DataUI HTML M1 S1 T1
+       , field2 :: DataUI HTML M2 S2 T2
+       , field3 :: DataUI HTML M3 S3 T3
        )
   -> { viewEntries ::
          Array
@@ -78,7 +82,7 @@ testUIRecord
                   )
               )
      }
-  -> UI HTML
+  -> DataUI HTML
        ( RecordMsg
            ( field1 :: M1
            , field2 :: M2
@@ -97,7 +101,7 @@ testUIRecord
            , field3 :: T3
            )
        )
-testUIRecord = uiRecord
+testDataUiRecord = dataUiRecord
 
 ---
 
@@ -122,8 +126,9 @@ data FnRecordGet sym = FnRecordGet (Proxy sym)
 instance
   ( Row.Cons sym a rx r
   , IsSymbol sym
+  , Newtype nt (Record r)
   ) =>
-  Mapping (FnRecordGet sym) (Record r) a
+  Mapping (FnRecordGet sym) nt a
   where
-  mapping (FnRecordGet prxSym) = Record.get prxSym
+  mapping (FnRecordGet prxSym) = Record.get prxSym <<< NT.unwrap
 

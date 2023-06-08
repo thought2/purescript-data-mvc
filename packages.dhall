@@ -71,8 +71,8 @@ with dts =
 
 with interactive-data-core =
   { repo = "ssh://git@github.com/thought2/purescript-interactive-data-core.git"
-  , version = "fa09621fa0e6becc3a0582eb27db4a2cd13f7d75"
-  , dependencies = [ "maybe", "prelude" ]
+  , version = "6c9412b157abd659bc97e870b5fb0bee9a2d4654"
+  , dependencies = [ "data-mvc", "either", "heterogeneous", "identity", "maybe", "newtype", "prelude", "record", "record-extra", "typelevel-prelude", "unsafe-coerce", "variant" ]
   }
 
 

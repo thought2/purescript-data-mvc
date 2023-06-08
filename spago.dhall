@@ -7,6 +7,7 @@
   , "maybe"
   , "newtype"
   , "prelude"
+  , "profunctor"
   , "record"
   , "record-extra"
   , "typelevel-prelude"

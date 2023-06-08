@@ -1,44 +1,39 @@
-module InteractiveData.Core.Variant.UI where
+module InteractiveData.Core.Variant.DataUI where
 
 import Prelude
 
 import Data.Either (Either(..))
-import Data.Identity (Identity)
+import Data.Newtype (class Newtype)
 import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
 import Data.Variant (Variant)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Record.Extract (class ExtractRecord, extractRecord)
-import InteractiveData.Core.Record.Init (class InitRecord, initRecord)
-import InteractiveData.Core.Types (Ctx, Error(..), UI, UICtx(..), Opt)
+import InteractiveData.Core.Types (DataUI(..), Error(..), Opt)
 import InteractiveData.Core.Variant.Extract (class ExtractVariant, extractVariant)
 import InteractiveData.Core.Variant.Init (class InitVariant, initVariant)
 import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
-import MVC.Record (class UpdateRecord, class ViewRecord, RecordMsg, RecordState, updateRecord, viewRecord)
-import MVC.Record.UI (UIRecordProps)
 import MVC.Variant.Types (VariantMsg, VariantState)
 import MVC.Variant.Update (class UpdateVariant, updateVariant)
 import MVC.Variant.View (class ViewVariant, ViewArgs, viewVariant)
 import Prim.Row as Row
 import Record as Record
 import Type.Proxy (Proxy(..))
-import Unsafe.Coerce (unsafeCoerce)
 
-type UIVariantProps :: forall k. (Type -> Type) -> k -> Type
-type UIVariantProps srf initsym =
+type DataUIVariantProps :: forall k. (Type -> Type) -> k -> Type
+type DataUIVariantProps srf initsym =
   { view :: forall msg. ViewArgs srf msg -> srf msg
   }
 
-class UIVariant :: Row Type -> (Type -> Type) -> Symbol -> Row Type -> Row Type -> Row Type -> Row Type -> Constraint
+class DataUIVariant :: Row Type -> (Type -> Type) -> Symbol -> Row Type -> Row Type -> Row Type -> Row Type -> Constraint
 class
-  UIVariant uis srf initsym rcase rmsg rsta r
+  DataUIVariant uis srf initsym rcase rmsg rsta r
   | uis srf initsym rcase -> rmsg rsta r
   where
-  uiVariant
+  dataUiVariant
     :: Record uis
     -> Proxy initsym
-    -> UIVariantProps srf initsym
-    -> UI srf (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
+    -> DataUIVariantProps srf initsym
+    -> DataUI srf (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
 
 instance
   ( MapProp "extract" uis extracts
@@ -53,11 +48,11 @@ instance
 
   , MapInits inits inits'
   ) =>
-  UIVariant uis srf initsym rcase rmsg rsta r
+  DataUIVariant uis srf initsym rcase rmsg rsta r
   where
-  uiVariant uis prxInitSym props =
-
-    { init, update, view, extract, name }
+  dataUiVariant uis prxInitSym props =
+    DataUI
+      { init, update, view, extract, name }
 
     where
     init = initVariant inits prxInitSym
@@ -80,15 +75,15 @@ instance
 
 ---
 
-testUIVariant
+testDataUiVariant
   :: Record
-       ( case1 :: UI HTML M1 S1 T1
-       , case2 :: UI HTML M2 S2 T2
-       , case3 :: UI HTML M3 S3 T3
+       ( case1 :: DataUI HTML M1 S1 T1
+       , case2 :: DataUI HTML M2 S2 T2
+       , case3 :: DataUI HTML M3 S3 T3
        )
   -> Proxy "case1"
   -> _
-  -> UI HTML
+  -> DataUI HTML
        ( VariantMsg
            ( case1 :: Unit
            , case2 :: Unit
@@ -111,7 +106,7 @@ testUIVariant
            , case3 :: T3
            )
        )
-testUIVariant = uiVariant
+testDataUiVariant = dataUiVariant
 
 -------------------------------------------------------------------------------
 --- Utils
@@ -134,10 +129,11 @@ data FnRecordGet sym = FnRecordGet (Proxy sym)
 instance
   ( Row.Cons sym a rx r
   , IsSymbol sym
+  , Newtype nt (Record r)
   ) =>
-  Mapping (FnRecordGet sym) (Record r) a
+  Mapping (FnRecordGet sym) nt a
   where
-  mapping (FnRecordGet prxSym) = Record.get prxSym
+  mapping (FnRecordGet prxSym) = Record.get prxSym <<< NT.unwrap
 
 ---
 
