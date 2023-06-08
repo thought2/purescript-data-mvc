@@ -6,7 +6,7 @@ import Data.Identity (Identity)
 import Data.Newtype as NT
 import Data.Variant (Variant)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Types (DataUI, DataUICtx, DataUIWithCtx(..))
+import InteractiveData.Core.Types (DataUiItf, DataUICtx, DataUIWithCtx(..))
 import InteractiveData.Core.Variant.DataUI (class DataUIVariant, DataUIVariantProps, dataUiVariant)
 import InteractiveData.TestTypes (HTML, M1, S1, T1)
 import MVC.Variant.Types (VariantMsg, VariantState)
@@ -89,6 +89,6 @@ instance
   Mapping
     (FnApplyCtx (DataUICtx srf fm fs))
     (DataUIWithCtx srf fm fs msg sta a)
-    (DataUI srf msg sta a)
+    (DataUiItf srf msg sta a)
   where
   mapping (FnApplyCtx x) datauiwithctx = NT.unwrap datauiwithctx x

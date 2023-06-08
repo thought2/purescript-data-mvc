@@ -4,7 +4,7 @@ import Data.Identity (Identity)
 import Data.Newtype as NT
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
 import InteractiveData.Core.Record.DataUI (class DataUIRecord, dataUiRecord)
-import InteractiveData.Core.Types (DataUI, DataUICtx, DataUIWithCtx(..))
+import InteractiveData.Core.Types (DataUiItf, DataUICtx, DataUIWithCtx(..))
 import InteractiveData.TestTypes (HTML, M1, S1, T1)
 import MVC.Record (RecordMsg, RecordState)
 import MVC.Record.UI (UIRecordProps)
@@ -78,5 +78,5 @@ instance (HMap (FnApplyCtx a) { | datauiwithctxs } { | uis }) => ApplyCtx a data
 
 data FnApplyCtx a = FnApplyCtx a
 
-instance Mapping (FnApplyCtx (DataUICtx srf fm fs)) (DataUIWithCtx srf fm fs msg sta a) (DataUI srf msg sta a) where
+instance Mapping (FnApplyCtx (DataUICtx srf fm fs)) (DataUIWithCtx srf fm fs msg sta a) (DataUiItf srf msg sta a) where
   mapping (FnApplyCtx x) datauiwithctx = NT.unwrap datauiwithctx x

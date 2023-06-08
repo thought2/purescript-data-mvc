@@ -8,7 +8,7 @@ import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
 import Data.Variant (Variant)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Types (DataUI(..), Error(..), Opt)
+import InteractiveData.Core.Types (DataUiItf(..), Error(..), Opt)
 import InteractiveData.Core.Variant.Extract (class ExtractVariant, extractVariant)
 import InteractiveData.Core.Variant.Init (class InitVariant, initVariant)
 import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
@@ -33,7 +33,7 @@ class
     :: Record uis
     -> Proxy initsym
     -> DataUIVariantProps srf initsym
-    -> DataUI srf (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
+    -> DataUiItf srf (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
 
 instance
   ( MapProp "extract" uis extracts
@@ -51,7 +51,7 @@ instance
   DataUIVariant uis srf initsym rcase rmsg rsta r
   where
   dataUiVariant uis prxInitSym props =
-    DataUI
+    DataUiItf
       { init, update, view, extract, name }
 
     where
@@ -77,13 +77,13 @@ instance
 
 testDataUiVariant
   :: Record
-       ( case1 :: DataUI HTML M1 S1 T1
-       , case2 :: DataUI HTML M2 S2 T2
-       , case3 :: DataUI HTML M3 S3 T3
+       ( case1 :: DataUiItf HTML M1 S1 T1
+       , case2 :: DataUiItf HTML M2 S2 T2
+       , case3 :: DataUiItf HTML M3 S3 T3
        )
   -> Proxy "case1"
   -> _
-  -> DataUI HTML
+  -> DataUiItf HTML
        ( VariantMsg
            ( case1 :: Unit
            , case2 :: Unit

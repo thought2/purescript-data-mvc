@@ -71,8 +71,15 @@ with dts =
 
 with interactive-data-core =
   { repo = "ssh://git@github.com/thought2/purescript-interactive-data-core.git"
-  , version = "6c9412b157abd659bc97e870b5fb0bee9a2d4654"
-  , dependencies = [ "data-mvc", "either", "heterogeneous", "identity", "maybe", "newtype", "prelude", "record", "record-extra", "typelevel-prelude", "unsafe-coerce", "variant" ]
+  , version = "c26b63e5499dc6350041482a7185a13683e463ae"
+  , dependencies = [ "data-mvc", "either", "heterogeneous", "identity", "maybe", "newtype", "prelude", "profunctor", "record", "record-extra", "typelevel-prelude", "unsafe-coerce", "variant" ]
+  }
+
+
+with interactive-data =
+  { repo = "ssh://git@github.com/thought2/purescript-interactive-data.git"
+  , version = "8fe5119eec1b00449ea19f1f657df8bb2853e590"
+  , dependencies = [ "arraybuffer-types", "arrays", "convertable-options", "data-mvc", "debug", "effect", "either", "foldable-traversable", "identity", "integers", "interactive-data-core", "lists", "maybe", "newtype", "numbers", "ordered-collections", "prelude", "profunctor", "strings", "tuples", "unsafe-coerce", "virtual-dom" ]
   }
 
 

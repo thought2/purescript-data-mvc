@@ -8,7 +8,7 @@ import Data.Symbol (class IsSymbol)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
 import InteractiveData.Core.Record.Extract (class ExtractRecord, extractRecord)
 import InteractiveData.Core.Record.Init (class InitRecord, initRecord)
-import InteractiveData.Core.Types (DataUI(..))
+import InteractiveData.Core.Types (DataUiItf(..))
 import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
 import MVC.Record (class UpdateRecord, class ViewRecord, RecordMsg, RecordState, updateRecord, viewRecord)
 import MVC.Record.UI (UIRecordProps)
@@ -20,7 +20,7 @@ class DataUIRecord uis srf rmsg rsta r where
   dataUiRecord
     :: Record uis
     -> UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
-    -> DataUI srf (RecordMsg rmsg) (RecordState rsta) (Record r)
+    -> DataUiItf srf (RecordMsg rmsg) (RecordState rsta) (Record r)
 
 instance
   ( MapProp "extract" uis extracts
@@ -35,7 +35,7 @@ instance
   ) =>
   DataUIRecord uis srf rmsg rsta r
   where
-  dataUiRecord uis props = DataUI { init, update, view, extract, name }
+  dataUiRecord uis props = DataUiItf { init, update, view, extract, name }
 
     where
     init = initRecord inits
@@ -58,9 +58,9 @@ instance
 
 testDataUiRecord
   :: Record
-       ( field1 :: DataUI HTML M1 S1 T1
-       , field2 :: DataUI HTML M2 S2 T2
-       , field3 :: DataUI HTML M3 S3 T3
+       ( field1 :: DataUiItf HTML M1 S1 T1
+       , field2 :: DataUiItf HTML M2 S2 T2
+       , field3 :: DataUiItf HTML M3 S3 T3
        )
   -> { viewEntries ::
          Array
@@ -82,7 +82,7 @@ testDataUiRecord
                   )
               )
      }
-  -> DataUI HTML
+  -> DataUiItf HTML
        ( RecordMsg
            ( field1 :: M1
            , field2 :: M2
