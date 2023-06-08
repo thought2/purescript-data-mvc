@@ -45,23 +45,23 @@ newtype DataUI srf fm fs msg sta a =
 
 runDataUIWithCtx
   :: forall srf fm fs msg sta a
-   . DataUIWithCtx srf fm fs msg sta a
+   . DataUI srf fm fs msg sta a
   -> DataUICtx srf fm fs
   -> DataUiItf srf msg sta a
-runDataUIWithCtx (DataUIWithCtx dataUi) ctx = dataUi ctx
+runDataUIWithCtx (DataUI dataUi) ctx = dataUi ctx
 
 runDataUIWithCtxFinal
   :: forall srf fm fs msg sta a
-   . DataUIWithCtx srf fm fs msg sta a
+   . DataUI srf fm fs msg sta a
   -> DataUICtx srf fm fs
   -> DataUiItf srf (fm msg) (fs sta) a
 runDataUIWithCtxFinal dataUiWithCtx ctx = runDataUIWithCtx (applyWrap dataUiWithCtx) ctx
 
 applyWrap
   :: forall srf fm fs msg sta a
-   . DataUIWithCtx srf fm fs msg sta a
-  -> DataUIWithCtx srf fm fs (fm msg) (fs sta) a
-applyWrap (DataUIWithCtx mkDataUi) = DataUIWithCtx \c@(DataUICtx ctx) -> ctx.wrap $ mkDataUi c
+   . DataUI srf fm fs msg sta a
+  -> DataUI srf fm fs (fm msg) (fs sta) a
+applyWrap (DataUI mkDataUi) = DataUI \c@(DataUICtx ctx) -> ctx.wrap $ mkDataUi c
 
 
 
@@ -117,8 +117,8 @@ type RefineOpts a b =
   , unrefine :: b -> a
   }
 
-refineDataUIWithCtx :: forall srf fm fs msg sta a b. RefineOpts a b -> DataUIWithCtx srf fm fs msg sta a -> DataUIWithCtx srf fm fs msg sta b
-refineDataUIWithCtx { typeName, refine, unrefine } (DataUIWithCtx mkDataUi) = DataUIWithCtx \ctx ->
+refineDataUIWithCtx :: forall srf fm fs msg sta a b. RefineOpts a b -> DataUI srf fm fs msg sta a -> DataUI srf fm fs msg sta b
+refineDataUIWithCtx { typeName, refine, unrefine } (DataUI mkDataUi) = DataUI \ctx ->
   let
     DataUiItf dataUi = mkDataUi ctx
   in
@@ -152,7 +152,7 @@ derive instance Generic Error _
 instance Show Error where
   show = genericShow
 
-derive instance Newtype (DataUIWithCtx srf fm fs msg sta a) _
+derive instance Newtype (DataUI srf fm fs msg sta a) _
 
 derive instance Newtype (DataUiItf srf msg sta a) _
 
