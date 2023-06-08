@@ -1,6 +1,5 @@
 module InteractiveData.Core.Record.Init where
 
-
 import Prelude
 
 import Data.Symbol (class IsSymbol)

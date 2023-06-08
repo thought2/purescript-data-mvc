@@ -3,35 +3,35 @@ module InteractiveData.Core.Record.DataUI where
 import Data.Identity (Identity)
 import Data.Newtype as NT
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Record.DataUiItf (class DataUIRecord, dataUiRecord)
+import InteractiveData.Core.Record.DataUiItf (class DataUiItfRecord, dataUiItfRecord)
 import InteractiveData.Core.Types (DataUiItf, DataUICtx, DataUI(..))
 import InteractiveData.TestTypes (HTML, M1, S1, T1)
 import MVC.Record (RecordMsg, RecordState)
 import MVC.Record.UI (UIRecordProps)
 
 class
-  DataUIWithCtxRecord uis fm fs srf rmsg rsta r
+  DataUiRecord uis fm fs srf rmsg rsta r
   | uis -> fm fs srf rmsg rsta r
   where
-  dataUIWithCtxRecord
+  dataUiRecord
     :: Record uis
     -> UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
     -> DataUI srf fm fs (RecordMsg rmsg) (RecordState rsta) (Record r)
 
 instance
-  ( ApplyCtx (DataUICtx srf fm fs) datauiwithctxs uis
-  , DataUIRecord uis srf rmsg rsta r
+  ( ApplyCtx (DataUICtx srf fm fs) datauis uis
+  , DataUiItfRecord uis srf rmsg rsta r
   ) =>
-  DataUIWithCtxRecord datauiwithctxs fm fs srf rmsg rsta r
+  DataUiRecord datauis fm fs srf rmsg rsta r
   where
-  dataUIWithCtxRecord datauiwithctxs props = DataUI \ctx ->
+  dataUiRecord datauis props = DataUI \ctx ->
     let
       uis :: Record uis
-      uis = mapApplyCtx ctx datauiwithctxs
+      uis = mapApplyCtx ctx datauis
     in
-      dataUiRecord uis props
+      dataUiItfRecord uis props
 
-testDataUIWithCtxRecord
+testDataUiRecord
   :: Record
        ( field1 :: DataUI HTML Identity Identity M1 S1 T1
        )
@@ -64,19 +64,19 @@ testDataUIWithCtxRecord
            ( field1 :: T1
            )
        )
-testDataUIWithCtxRecord = dataUIWithCtxRecord
+testDataUiRecord = dataUiRecord
 
 -------------------------------------------------------------------------------
 --- Utils
 -------------------------------------------------------------------------------
 
-class ApplyCtx a datauiwithctxs uis where
-  mapApplyCtx :: a -> { | datauiwithctxs } -> { | uis }
+class ApplyCtx a datauis uis where
+  mapApplyCtx :: a -> { | datauis } -> { | uis }
 
-instance (HMap (FnApplyCtx a) { | datauiwithctxs } { | uis }) => ApplyCtx a datauiwithctxs uis where
+instance (HMap (FnApplyCtx a) { | datauis } { | uis }) => ApplyCtx a datauis uis where
   mapApplyCtx x = hmap (FnApplyCtx x)
 
 data FnApplyCtx a = FnApplyCtx a
 
 instance Mapping (FnApplyCtx (DataUICtx srf fm fs)) (DataUI srf fm fs msg sta a) (DataUiItf srf msg sta a) where
-  mapping (FnApplyCtx x) datauiwithctx = NT.unwrap datauiwithctx x
+  mapping (FnApplyCtx x) dataUi = NT.unwrap dataUi x

@@ -7,37 +7,37 @@ import Data.Newtype as NT
 import Data.Variant (Variant)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
 import InteractiveData.Core.Types (DataUiItf, DataUICtx, DataUI(..))
-import InteractiveData.Core.Variant.DataUiItf (class DataUIVariant, DataUIVariantProps, dataUiVariant)
+import InteractiveData.Core.Variant.DataUiItf (class DataUiItfVariant, DataUiItfVariantProps, dataUiItfVariant)
 import InteractiveData.TestTypes (HTML, M1, S1, T1)
 import MVC.Variant.Types (VariantMsg, VariantState)
 import Type.Proxy (Proxy)
 
-class DataUIWithCtxVariant :: forall k. Row Type -> (Type -> Type) -> (Type -> Type) -> (Type -> Type) -> k -> Row Type -> Row Type -> Row Type -> Row Type -> Constraint
+class DataUiVariant :: forall k. Row Type -> (Type -> Type) -> (Type -> Type) -> (Type -> Type) -> k -> Row Type -> Row Type -> Row Type -> Row Type -> Constraint
 class
-  DataUIWithCtxVariant datauiwithctxs fm fs srf initsym rcase rmsg rsta r
-  -- | datauiwithctxs srf initsym -> rcase rmsg rsta r fm fs
+  DataUiVariant datauis fm fs srf initsym rcase rmsg rsta r
+  -- | datauis srf initsym -> rcase rmsg rsta r fm fs
   where
-  dataUIWithCtxVariant
-    :: Record datauiwithctxs
+  dataUiVariant
+    :: Record datauis
     -> Proxy initsym
-    -> DataUIVariantProps srf initsym
+    -> DataUiItfVariantProps srf initsym
     -> DataUI srf fm fs (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
 
 instance
-  ( ApplyCtx (DataUICtx srf fm fs) datauiwithctxs uis
-  , DataUIVariant uis srf initsym rcase rmsg rsta r
+  ( ApplyCtx (DataUICtx srf fm fs) datauis uis
+  , DataUiItfVariant uis srf initsym rcase rmsg rsta r
   ) =>
-  DataUIWithCtxVariant datauiwithctxs fm fs srf initsym rcase rmsg rsta r
+  DataUiVariant datauis fm fs srf initsym rcase rmsg rsta r
   where
-  dataUIWithCtxVariant datauiwithctxs prxInitSym props =
+  dataUiVariant datauis prxInitSym props =
     DataUI \ctx ->
       let
         uis :: Record uis
-        uis = mapApplyCtx ctx datauiwithctxs
+        uis = mapApplyCtx ctx datauis
       in
-        dataUiVariant uis prxInitSym props
+        dataUiItfVariant uis prxInitSym props
 
-testDataUIWithCtxVariant
+testDataUiVariant
   :: Record
        ( case1 :: DataUI HTML Identity Identity M1 S1 T1
        , case2 :: DataUI HTML Identity Identity M1 S1 T1
@@ -68,19 +68,19 @@ testDataUIWithCtxVariant
            , case3 :: T1
            )
        )
-testDataUIWithCtxVariant = dataUIWithCtxVariant
+testDataUiVariant = dataUiVariant
 
 -------------------------------------------------------------------------------
 --- Utils
 -------------------------------------------------------------------------------
 
-class ApplyCtx c datauiwithctxs uis | c datauiwithctxs -> uis where
-  mapApplyCtx :: c -> { | datauiwithctxs } -> { | uis }
+class ApplyCtx c datauis uis | c datauis -> uis where
+  mapApplyCtx :: c -> { | datauis } -> { | uis }
 
 instance
-  ( HMap (FnApplyCtx (DataUICtx srf fm fs)) { | datauiwithctxs } { | uis }
+  ( HMap (FnApplyCtx (DataUICtx srf fm fs)) { | datauis } { | uis }
   ) =>
-  ApplyCtx (DataUICtx srf fm fs) datauiwithctxs uis where
+  ApplyCtx (DataUICtx srf fm fs) datauis uis where
   mapApplyCtx x = hmap (FnApplyCtx x)
 
 data FnApplyCtx c = FnApplyCtx c
@@ -91,4 +91,4 @@ instance
     (DataUI srf fm fs msg sta a)
     (DataUiItf srf msg sta a)
   where
-  mapping (FnApplyCtx x) datauiwithctx = NT.unwrap datauiwithctx x
+  mapping (FnApplyCtx x) dataui = NT.unwrap dataui x

@@ -16,8 +16,8 @@ import Prim.Row as Row
 import Record as Record
 import Type.Proxy (Proxy(..))
 
-class DataUIRecord uis srf rmsg rsta r where
-  dataUiRecord
+class DataUiItfRecord uis srf rmsg rsta r where
+  dataUiItfRecord
     :: Record uis
     -> UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
     -> DataUiItf srf (RecordMsg rmsg) (RecordState rsta) (Record r)
@@ -33,9 +33,9 @@ instance
   , ViewRecord srf views rmsg rsta
   , ExtractRecord extracts rsta r
   ) =>
-  DataUIRecord uis srf rmsg rsta r
+  DataUiItfRecord uis srf rmsg rsta r
   where
-  dataUiRecord uis props = DataUiItf { init, update, view, extract, name }
+  dataUiItfRecord uis props = DataUiItf { init, update, view, extract, name }
 
     where
     init = initRecord inits
@@ -56,7 +56,7 @@ instance
 
 ---
 
-testDataUiRecord
+testDataUiItfRecord
   :: Record
        ( field1 :: DataUiItf HTML M1 S1 T1
        , field2 :: DataUiItf HTML M2 S2 T2
@@ -101,7 +101,7 @@ testDataUiRecord
            , field3 :: T3
            )
        )
-testDataUiRecord = dataUiRecord
+testDataUiItfRecord = dataUiItfRecord
 
 ---
 

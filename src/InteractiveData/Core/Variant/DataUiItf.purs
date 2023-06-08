@@ -19,20 +19,20 @@ import Prim.Row as Row
 import Record as Record
 import Type.Proxy (Proxy(..))
 
-type DataUIVariantProps :: forall k. (Type -> Type) -> k -> Type
-type DataUIVariantProps srf initsym =
+type DataUiItfVariantProps :: forall k. (Type -> Type) -> k -> Type
+type DataUiItfVariantProps srf initsym =
   { view :: forall msg. ViewArgs srf msg -> srf msg
   }
 
-class DataUIVariant :: Row Type -> (Type -> Type) -> Symbol -> Row Type -> Row Type -> Row Type -> Row Type -> Constraint
+class DataUiItfVariant :: Row Type -> (Type -> Type) -> Symbol -> Row Type -> Row Type -> Row Type -> Row Type -> Constraint
 class
-  DataUIVariant uis srf initsym rcase rmsg rsta r
+  DataUiItfVariant uis srf initsym rcase rmsg rsta r
   | uis srf initsym rcase -> rmsg rsta r
   where
-  dataUiVariant
+  dataUiItfVariant
     :: Record uis
     -> Proxy initsym
-    -> DataUIVariantProps srf initsym
+    -> DataUiItfVariantProps srf initsym
     -> DataUiItf srf (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
 
 instance
@@ -48,9 +48,9 @@ instance
 
   , MapInits inits inits'
   ) =>
-  DataUIVariant uis srf initsym rcase rmsg rsta r
+  DataUiItfVariant uis srf initsym rcase rmsg rsta r
   where
-  dataUiVariant uis prxInitSym props =
+  dataUiItfVariant uis prxInitSym props =
     DataUiItf
       { init, update, view, extract, name }
 
@@ -75,7 +75,7 @@ instance
 
 ---
 
-testDataUiVariant
+testDataUiItfVariant
   :: Record
        ( case1 :: DataUiItf HTML M1 S1 T1
        , case2 :: DataUiItf HTML M2 S2 T2
@@ -106,7 +106,7 @@ testDataUiVariant
            , case3 :: T3
            )
        )
-testDataUiVariant = dataUiVariant
+testDataUiItfVariant = dataUiItfVariant
 
 -------------------------------------------------------------------------------
 --- Utils
