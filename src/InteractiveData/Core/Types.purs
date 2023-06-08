@@ -5,6 +5,7 @@ import Prelude
 import Data.Either (Either(..))
 import Data.Generic.Rep (class Generic)
 import Data.Newtype (class Newtype)
+import Data.Newtype as NT
 import Data.Profunctor (lcmap)
 import Data.Show.Generic (genericShow)
 import MVC.Types as MVC
@@ -18,7 +19,6 @@ type Init sta a = Opt a -> sta
 type View :: forall k. (k -> Type) -> k -> Type -> Type
 type View srf msg sta = sta -> srf msg
 
-
 ---
 
 newtype DataUiItf srf msg sta a =
@@ -30,8 +30,8 @@ newtype DataUiItf srf msg sta a =
     , name :: String
     }
 
-dataUItoUI :: forall html msg sta a. DataUiItf html msg sta a -> MVC.UI html msg sta
-dataUItoUI (DataUiItf dataUi) =
+dataUiItfToUI :: forall html msg sta a. DataUiItf html msg sta a -> MVC.UI html msg sta
+dataUiItfToUI (DataUiItf dataUi) =
   { init: dataUi.init $ Left ErrNotYetDefined
   , update: dataUi.update
   , view: dataUi.view
@@ -43,19 +43,19 @@ newtype DataUI srf fm fs msg sta a =
   DataUI
     (DataUICtx srf fm fs -> DataUiItf srf msg sta a)
 
-runDataUIWithCtx
+runDataUi
   :: forall srf fm fs msg sta a
    . DataUI srf fm fs msg sta a
   -> DataUICtx srf fm fs
   -> DataUiItf srf msg sta a
-runDataUIWithCtx (DataUI dataUi) ctx = dataUi ctx
+runDataUi (DataUI dataUi) ctx = dataUi ctx
 
-runDataUIWithCtxFinal
+runDataUiFinal
   :: forall srf fm fs msg sta a
    . DataUI srf fm fs msg sta a
   -> DataUICtx srf fm fs
   -> DataUiItf srf (fm msg) (fs sta) a
-runDataUIWithCtxFinal dataUiWithCtx ctx = runDataUIWithCtx (applyWrap dataUiWithCtx) ctx
+runDataUiFinal dataUi ctx = runDataUi (applyWrap dataUi) ctx
 
 applyWrap
   :: forall srf fm fs msg sta a
@@ -63,29 +63,27 @@ applyWrap
   -> DataUI srf fm fs (fm msg) (fs sta) a
 applyWrap (DataUI mkDataUi) = DataUI \c@(DataUICtx ctx) -> ctx.wrap $ mkDataUi c
 
-
-
--- applyUI
---   :: forall html msg1 msg2 sta1 sta2 a1 a2
---    . { extract :: Extract sta1 a1 -> Extract sta2 a2
---      , init :: Init sta1 a1 -> Init sta2 a2
---      , name :: String
---      , update :: Update msg1 sta1 -> Update msg2 sta2
---      , view :: View html msg1 sta1 -> View html msg2 sta2
---      }
---   -> DataUI html msg1 sta1 a1
---   -> DataUI html msg2 sta2 a2
--- applyUI r ui1 = C.UICtx \ctx ->
---   { name: r.name
---   , view:
---       r.view (runDataUI ctx ui1).view
---   , extract:
---       r.extract (runDataUI ctx ui1).extract
---   , update:
---       r.update (runDataUI ctx ui1).update
---   , init:
---       r.init (runDataUI ctx ui1).init
---   }
+applyDataUi
+  :: forall html fm fs msg1 msg2 sta1 sta2 a1 a2
+   . { extract :: Extract sta1 a1 -> Extract sta2 a2
+     , init :: Init sta1 a1 -> Init sta2 a2
+     , name :: String
+     , update :: Update msg1 sta1 -> Update msg2 sta2
+     , view :: View html msg1 sta1 -> View html msg2 sta2
+     }
+  -> DataUI html fm fs msg1 sta1 a1
+  -> DataUI html fm fs msg2 sta2 a2
+applyDataUi r ui1 = DataUI \ctx -> DataUiItf
+  { name: r.name
+  , view:
+      r.view (NT.unwrap $ runDataUi ui1 ctx).view
+  , extract:
+      r.extract (NT.unwrap $ runDataUi ui1 ctx).extract
+  , update:
+      r.update (NT.unwrap $ runDataUi ui1 ctx).update
+  , init:
+      r.init (NT.unwrap $ runDataUi ui1 ctx).init
+  }
 
 -- applyUI2
 --   :: forall html msg1 msg2 msg3 sta1 sta2 sta3 a1 a2 a3
@@ -117,8 +115,8 @@ type RefineOpts a b =
   , unrefine :: b -> a
   }
 
-refineDataUIWithCtx :: forall srf fm fs msg sta a b. RefineOpts a b -> DataUI srf fm fs msg sta a -> DataUI srf fm fs msg sta b
-refineDataUIWithCtx { typeName, refine, unrefine } (DataUI mkDataUi) = DataUI \ctx ->
+refineDataUi :: forall srf fm fs msg sta a b. RefineOpts a b -> DataUI srf fm fs msg sta a -> DataUI srf fm fs msg sta b
+refineDataUi { typeName, refine, unrefine } (DataUI mkDataUi) = DataUI \ctx ->
   let
     DataUiItf dataUi = mkDataUi ctx
   in
