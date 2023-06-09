@@ -1,11 +1,7 @@
 module InteractiveData.Core.Record.DataUI where
 
-import Prelude
-
 import Data.Identity (Identity)
-import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
-import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
 import InteractiveData.Core.Record.DataUiItf (class DataUiItfRecord, dataUiItfRecord)
 import InteractiveData.Core.Types (DataUI(..), DataUICtx, DataUiItf, runDataUi)
 import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
@@ -16,15 +12,14 @@ import Prim.RowList (class RowToList, RowList)
 import Prim.RowList as RL
 import Record as Record
 import Type.Proxy (Proxy(..))
-import Unsafe.Coerce (unsafeCoerce)
 
 class
   DataUiRecord datauis fm fs srf rmsg rsta r
-    | datauis -> fm fs srf rmsg rsta r
+  | datauis -> fm fs srf rmsg rsta r
   where
   dataUiRecord
-    :: Record datauis
-    -> UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
+    :: UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
+    -> Record datauis
     -> DataUI srf fm fs (RecordMsg rmsg) (RecordState rsta) (Record r)
 
 instance
@@ -33,20 +28,15 @@ instance
   ) =>
   DataUiRecord datauis fm fs srf rmsg rsta r
   where
-  dataUiRecord datauis props = DataUI \ctx ->
+  dataUiRecord props datauis = DataUI \ctx ->
     let
       uis :: Record uis
       uis = mapApplyCtx ctx datauis
     in
-      dataUiItfRecord uis props
+      dataUiItfRecord props uis
 
 testDataUiRecord
-  :: Record
-       ( field1 :: DataUI HTML Identity Identity M1 S1 T1
-       , field2 :: DataUI HTML Identity Identity M2 S2 T2
-       , field3 :: DataUI HTML Identity Identity M3 S3 T3
-       )
-  -> { viewEntries ::
+  :: { viewEntries ::
          Array
            { key :: String
            , viewValue ::
@@ -66,6 +56,11 @@ testDataUiRecord
                   )
               )
      }
+  -> Record
+       ( field1 :: DataUI HTML Identity Identity M1 S1 T1
+       , field2 :: DataUI HTML Identity Identity M2 S2 T2
+       , field3 :: DataUI HTML Identity Identity M3 S3 T3
+       )
   -> DataUI HTML Identity Identity
        ( RecordMsg
            ( field1 :: M1
@@ -88,10 +83,37 @@ testDataUiRecord
 testDataUiRecord = dataUiRecord
 
 testDataUiRecord2
-  :: Record
+  :: { viewEntries ::
+         Array
+           { key :: String
+           , viewValue ::
+               HTML
+                 ( RecordMsg
+                     ( field1 :: M1
+                     )
+                 )
+           }
+         -> HTML
+              ( RecordMsg
+                  ( field1 :: M1
+                  )
+              )
+     }
+  -> Record
        ( field1 :: DataUI HTML Identity Identity M1 S1 T1
        )
-  -> _
+  -> DataUI HTML Identity Identity
+       ( RecordMsg
+           ( field1 :: M1
+           )
+       )
+       ( RecordState
+           ( field1 :: S1
+           )
+       )
+       { field1 :: T1
+       }
+
 testDataUiRecord2 = dataUiRecord
 
 -------------------------------------------------------------------------------

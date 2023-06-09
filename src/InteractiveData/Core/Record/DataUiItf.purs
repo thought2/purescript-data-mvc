@@ -18,8 +18,8 @@ import Type.Proxy (Proxy(..))
 
 class DataUiItfRecord uis srf rmsg rsta r where
   dataUiItfRecord
-    :: Record uis
-    -> UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
+    :: UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
+    -> Record uis
     -> DataUiItf srf (RecordMsg rmsg) (RecordState rsta) (Record r)
 
 instance
@@ -35,7 +35,7 @@ instance
   ) =>
   DataUiItfRecord uis srf rmsg rsta r
   where
-  dataUiItfRecord uis props = DataUiItf { init, update, view, extract, name }
+  dataUiItfRecord props uis = DataUiItf { init, update, view, extract, name }
 
     where
     init = initRecord inits
@@ -57,12 +57,7 @@ instance
 ---
 
 testDataUiItfRecord
-  :: Record
-       ( field1 :: DataUiItf HTML M1 S1 T1
-       , field2 :: DataUiItf HTML M2 S2 T2
-       , field3 :: DataUiItf HTML M3 S3 T3
-       )
-  -> { viewEntries ::
+  :: { viewEntries ::
          Array
            { key :: String
            , viewValue ::
@@ -82,6 +77,11 @@ testDataUiItfRecord
                   )
               )
      }
+  -> Record
+       ( field1 :: DataUiItf HTML M1 S1 T1
+       , field2 :: DataUiItf HTML M2 S2 T2
+       , field3 :: DataUiItf HTML M3 S3 T3
+       )
   -> DataUiItf HTML
        ( RecordMsg
            ( field1 :: M1
