@@ -52,16 +52,19 @@ runDataUi (DataUI dataUi) ctx = dataUi ctx
 
 runDataUiFinal
   :: forall srf fm fs msg sta a
-   . DataUI srf fm fs msg sta a
+   . String
+  -> DataUI srf fm fs msg sta a
   -> DataUICtx srf fm fs
   -> DataUiItf srf (fm msg) (fs sta) a
-runDataUiFinal dataUi ctx = runDataUi (applyWrap dataUi) ctx
+runDataUiFinal name dataUi ctx = runDataUi (applyWrap name dataUi) ctx
 
 applyWrap
   :: forall srf fm fs msg sta a
-   . DataUI srf fm fs msg sta a
+   . String
+  -> DataUI srf fm fs msg sta a
   -> DataUI srf fm fs (fm msg) (fs sta) a
-applyWrap (DataUI mkDataUi) = DataUI \c@(DataUICtx ctx) -> ctx.wrap $ mkDataUi c
+applyWrap name (DataUI mkDataUi) = DataUI \c@(DataUICtx ctx) ->
+  ctx.wrap name $ mkDataUi c
 
 applyDataUi
   :: forall html fm fs msg1 msg2 sta1 sta2 a1 a2
@@ -84,30 +87,6 @@ applyDataUi r ui1 = DataUI \ctx -> DataUiItf
   , init:
       r.init (NT.unwrap $ runDataUi ui1 ctx).init
   }
-
--- applyUI2
---   :: forall html msg1 msg2 msg3 sta1 sta2 sta3 a1 a2 a3
---    . { extract :: Extract sta1 a1 -> Extract sta2 a2 -> Extract sta3 a3
---      , init :: Init sta1 a1 -> Init sta2 a2 -> Init sta3 a3
---      , name :: String
---      , update :: Update msg1 sta1 -> Update msg2 sta2 -> Update msg3 sta3
---      , view :: View html msg1 sta1 -> View html msg2 sta2 -> View html msg3 sta3
---      }
---   -> DataUI html msg1 sta1 a1
---   -> DataUI html msg2 sta2 a2
---   -> DataUI html msg3 sta3 a3
--- applyUI2 r ui1 ui2 = C.UICtx \ctx ->
---   { name: r.name
---   , view:
---       r.view (runDataUI ctx ui1).view (runDataUI ctx ui2).view
---   , extract:
---       r.extract (runDataUI ctx ui1).extract (runDataUI ctx ui2).extract
---   , update:
---       r.update (runDataUI ctx ui1).update (runDataUI ctx ui2).update
---   , init:
---       r.init (runDataUI ctx ui1).init (runDataUI ctx ui2).init
---   }
----
 
 type RefineOpts a b =
   { typeName :: String
@@ -133,7 +112,11 @@ refineDataUi { typeName, refine, unrefine } (DataUI mkDataUi) = DataUI \ctx ->
 newtype DataUICtx html fm fs = DataUICtx (DataUICtxImpl html fm fs)
 
 type DataUICtxImpl html fm fs =
-  { wrap :: forall msg sta a. DataUiItf html msg sta a -> DataUiItf html (fm msg) (fs sta) a
+  { wrap ::
+      forall msg sta a
+       . String
+      -> DataUiItf html msg sta a
+      -> DataUiItf html (fm msg) (fs sta) a
   }
 
 unDataUICtx :: forall html fm fs. DataUICtx html fm fs -> DataUICtxImpl html fm fs
