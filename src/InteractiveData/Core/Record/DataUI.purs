@@ -3,7 +3,7 @@ module InteractiveData.Core.Record.DataUI where
 import Data.Identity (Identity)
 import Data.Symbol (class IsSymbol)
 import InteractiveData.Core.Record.DataUiItf (class DataUiItfRecord, dataUiItfRecord)
-import InteractiveData.Core.Types (DataUI(..), DataUICtx, DataUiItf, runDataUi)
+import InteractiveData.Core.Types (DataUI(..), DataUICtx, DataUiItf, applyWrap, runDataUi)
 import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
 import MVC.Record (RecordMsg, RecordState)
 import MVC.Record.UI (UIRecordProps)
@@ -42,17 +42,17 @@ testDataUiRecord
            , viewValue ::
                HTML
                  ( RecordMsg
-                     ( field1 :: M1
-                     , field2 :: M2
-                     , field3 :: M3
+                     ( field1 :: Identity M1
+                     , field2 :: Identity M2
+                     , field3 :: Identity M3
                      )
                  )
            }
          -> HTML
               ( RecordMsg
-                  ( field1 :: M1
-                  , field2 :: M2
-                  , field3 :: M3
+                  ( field1 :: Identity M1
+                  , field2 :: Identity M2
+                  , field3 :: Identity M3
                   )
               )
      }
@@ -63,15 +63,15 @@ testDataUiRecord
        )
   -> DataUI HTML Identity Identity
        ( RecordMsg
-           ( field1 :: M1
-           , field2 :: M2
-           , field3 :: M3
+           ( field1 :: Identity M1
+           , field2 :: Identity M2
+           , field3 :: Identity M3
            )
        )
        ( RecordState
-           ( field1 :: S1
-           , field2 :: S2
-           , field3 :: S3
+           ( field1 :: Identity S1
+           , field2 :: Identity S2
+           , field3 :: Identity S3
            )
        )
        ( Record
@@ -89,13 +89,13 @@ testDataUiRecord2
            , viewValue ::
                HTML
                  ( RecordMsg
-                     ( field1 :: M1
+                     ( field1 :: Identity M1
                      )
                  )
            }
          -> HTML
               ( RecordMsg
-                  ( field1 :: M1
+                  ( field1 :: Identity M1
                   )
               )
      }
@@ -104,11 +104,11 @@ testDataUiRecord2
        )
   -> DataUI HTML Identity Identity
        ( RecordMsg
-           ( field1 :: M1
+           ( field1 :: Identity M1
            )
        )
        ( RecordState
-           ( field1 :: S1
+           ( field1 :: Identity S1
            )
        )
        { field1 :: T1
@@ -139,7 +139,7 @@ instance ApplyCtxRL RL.Nil a datauis () where
 
 instance
   ( ApplyCtxRL rl' (DataUICtx srf fm fs) datauis uis'
-  , Row.Cons sym (DataUiItf srf msg sta a) uis' uis
+  , Row.Cons sym (DataUiItf srf (fm msg) (fs sta) a) uis' uis
   , Row.Cons sym (DataUI srf fm fs msg sta a) datauisx datauis
   , IsSymbol sym
   , Row.Lacks sym uis'
@@ -151,8 +151,11 @@ instance
     dataui :: DataUI srf fm fs msg sta a
     dataui = Record.get prxSym datauis
 
-    ui :: DataUiItf srf msg sta a
-    ui = runDataUi dataui ctx
+    dataui' :: DataUI srf fm fs (fm msg) (fs sta) a
+    dataui' = applyWrap dataui
+
+    ui :: DataUiItf srf (fm msg) (fs sta) a
+    ui = runDataUi dataui' ctx
 
     tail :: { | uis' }
     tail = mapApplyCtxRL (Proxy :: Proxy rl') ctx datauis

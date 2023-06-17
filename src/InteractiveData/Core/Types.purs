@@ -52,19 +52,17 @@ runDataUi (DataUI dataUi) ctx = dataUi ctx
 
 runDataUiFinal
   :: forall srf fm fs msg sta a
-   . String
-  -> DataUI srf fm fs msg sta a
+   . DataUI srf fm fs msg sta a
   -> DataUICtx srf fm fs
   -> DataUiItf srf (fm msg) (fs sta) a
-runDataUiFinal name dataUi ctx = runDataUi (applyWrap name dataUi) ctx
+runDataUiFinal dataUi ctx = runDataUi (applyWrap dataUi) ctx
 
 applyWrap
   :: forall srf fm fs msg sta a
-   . String
-  -> DataUI srf fm fs msg sta a
+   . DataUI srf fm fs msg sta a
   -> DataUI srf fm fs (fm msg) (fs sta) a
-applyWrap name (DataUI mkDataUi) = DataUI \c@(DataUICtx ctx) ->
-  ctx.wrap name $ mkDataUi c
+applyWrap  (DataUI mkDataUi) = DataUI \c@(DataUICtx ctx) ->
+  ctx.wrap $ mkDataUi c
 
 applyDataUi
   :: forall html fm fs msg1 msg2 sta1 sta2 a1 a2
@@ -114,8 +112,7 @@ newtype DataUICtx html fm fs = DataUICtx (DataUICtxImpl html fm fs)
 type DataUICtxImpl html fm fs =
   { wrap ::
       forall msg sta a
-       . String
-      -> DataUiItf html msg sta a
+       . DataUiItf html msg sta a
       -> DataUiItf html (fm msg) (fs sta) a
   }
 
