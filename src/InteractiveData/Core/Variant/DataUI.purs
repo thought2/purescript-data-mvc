@@ -3,13 +3,12 @@ module InteractiveData.Core.Variant.DataUI where
 import Prelude
 
 import Data.Identity (Identity)
-import Data.Newtype as NT
 import Data.Variant (Variant)
-import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Types (DataUiItf, DataUICtx, DataUI(..))
+import InteractiveData.Core.ApplyCtx (class ApplyCtx, mapApplyCtx)
+import InteractiveData.Core.Types (DataUI(..), DataUICtx)
 import InteractiveData.Core.Variant.DataUiItf (class DataUiItfVariant, DataUiItfVariantProps, dataUiItfVariant)
 import InteractiveData.TestTypes (HTML, M1, S1, T1)
-import MVC.Variant.Types (VariantMsg, VariantState)
+import MVC.Variant.Types (CaseKey, VariantMsg, VariantState)
 import Type.Proxy (Proxy)
 
 class DataUiVariant :: forall k. Row Type -> (Type -> Type) -> (Type -> Type) -> (Type -> Type) -> k -> Row Type -> Row Type -> Row Type -> Row Type -> Constraint
@@ -44,22 +43,30 @@ testDataUiVariant
        , case3 :: DataUI HTML Identity Identity M1 S1 T1
        )
   -> Proxy "case1"
-  -> _
+  -> { view :: forall msg.
+            { caseKey :: CaseKey
+            , caseKeys :: Array CaseKey
+            , mkMsg :: CaseKey -> msg
+            , viewCase :: HTML msg
+            }
+            -> HTML msg
+}
+
   -> DataUI HTML Identity Identity
        ( VariantMsg
            ( case1 :: Unit
            , case2 :: Unit
            , case3 :: Unit
            )
-           ( case1 :: M1
-           , case2 :: M1
-           , case3 :: M1
+           ( case1 :: Identity M1
+           , case2 :: Identity M1
+           , case3 :: Identity M1
            )
        )
        ( VariantState
-           ( case1 :: S1
-           , case2 :: S1
-           , case3 :: S1
+           ( case1 :: Identity S1
+           , case2 :: Identity S1
+           , case3 :: Identity S1
            )
        )
        ( Variant
@@ -69,26 +76,3 @@ testDataUiVariant
            )
        )
 testDataUiVariant = dataUiVariant
-
--------------------------------------------------------------------------------
---- Utils
--------------------------------------------------------------------------------
-
-class ApplyCtx c datauis uis | c datauis -> uis where
-  mapApplyCtx :: c -> { | datauis } -> { | uis }
-
-instance
-  ( HMap (FnApplyCtx (DataUICtx srf fm fs)) { | datauis } { | uis }
-  ) =>
-  ApplyCtx (DataUICtx srf fm fs) datauis uis where
-  mapApplyCtx x = hmap (FnApplyCtx x)
-
-data FnApplyCtx c = FnApplyCtx c
-
-instance
-  Mapping
-    (FnApplyCtx (DataUICtx srf fm fs))
-    (DataUI srf fm fs msg sta a)
-    (DataUiItf srf msg sta a)
-  where
-  mapping (FnApplyCtx x) dataui = NT.unwrap dataui x
