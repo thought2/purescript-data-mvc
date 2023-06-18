@@ -14,7 +14,7 @@ import Type.Proxy (Proxy)
 class DataUiVariant :: forall k. Row Type -> (Type -> Type) -> (Type -> Type) -> (Type -> Type) -> k -> Row Type -> Row Type -> Row Type -> Row Type -> Constraint
 class
   DataUiVariant datauis fm fs srf initsym rcase rmsg rsta r
-  -- | datauis srf initsym -> rcase rmsg rsta r fm fs
+  | datauis -> fm fs srf initsym rcase rmsg rsta r
   where
   dataUiVariant
     :: Record datauis
