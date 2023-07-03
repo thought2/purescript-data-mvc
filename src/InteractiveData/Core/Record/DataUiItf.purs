@@ -5,21 +5,16 @@ import Prelude
 import Data.Newtype (class Newtype)
 import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
-import Data.Tuple (Tuple(..))
-import Foreign.Object (Object)
-import Foreign.Object as O
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
 import InteractiveData.Core.Record.Extract (class ExtractRecord, extractRecord)
 import InteractiveData.Core.Record.Init (class InitRecord, initRecord)
-import InteractiveData.Core.Types (DataPathSegment(..), DataPathTree(..), DataUiItf(..))
+import InteractiveData.Core.Types (DataUiItf(..))
 import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
 import MVC.Record (class UpdateRecord, class ViewRecord, RecordMsg, RecordState, updateRecord, viewRecord)
 import MVC.Record.UI (UIRecordProps)
 import Prim.Row as Row
 import Record as Record
 import Type.Proxy (Proxy(..))
-import Type.Row.Homogeneous (class Homogeneous)
-import Unsafe.Coerce (unsafeCoerce)
 
 class DataUiItfRecord uis srf rmsg rsta r where
   dataUiItfRecord
@@ -32,18 +27,15 @@ instance
   , MapProp "init" uis inits
   , MapProp "update" uis updates
   , MapProp "view" uis views
-  , MapProp "meta" uis metas
 
   , InitRecord inits r rsta
   , UpdateRecord updates rmsg rsta
   , ViewRecord srf views rmsg rsta
   , ExtractRecord extracts rsta r
-
-  , Homogeneous metas (Array DataPathTree)
   ) =>
   DataUiItfRecord uis srf rmsg rsta r
   where
-  dataUiItfRecord props uis = DataUiItf { init, update, view, extract, meta, name }
+  dataUiItfRecord props uis = DataUiItf { init, update, view, extract, name }
 
     where
     init = initRecord inits
@@ -51,19 +43,16 @@ instance
     view = viewRecord views { viewEntries: props.viewEntries }
     extract = extractRecord extracts
     name = "Record"
-    meta = metaRecord (homogeneousToObject metas)
 
     inits = mapProp prxInit uis
     updates = mapProp prxUpdate uis
     views = mapProp prxView uis
     extracts = mapProp prxExtract uis
-    metas = mapProp prxMeta uis
 
     prxInit = Proxy :: _ "init"
     prxUpdate = Proxy :: _ "update"
     prxView = Proxy :: _ "view"
     prxExtract = Proxy :: _ "extract"
-    prxMeta = Proxy :: _ "meta"
 
 ---
 
@@ -143,14 +132,3 @@ instance
   where
   mapping (FnRecordGet prxSym) = Record.get prxSym <<< NT.unwrap
 
----
-
-homogeneousToObject :: forall r a. Homogeneous r a => Record r -> Object a
-homogeneousToObject = unsafeCoerce
-
----
-
-metaRecord :: Object (Array DataPathTree) -> Array DataPathTree
-metaRecord obj = obj
-  # (O.toUnfoldable :: _ -> Array _)
-  <#> (\(Tuple key value) -> DataPathTree (StaticKey key) value)

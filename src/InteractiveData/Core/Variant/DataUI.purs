@@ -43,15 +43,15 @@ testDataUiVariant
        , case3 :: DataUI HTML Identity Identity M1 S1 T1
        )
   -> Proxy "case1"
-  -> { view ::
-         forall msg
-          . { caseKey :: CaseKey
+  -> { view :: forall msg.
+            { caseKey :: CaseKey
             , caseKeys :: Array CaseKey
             , mkMsg :: CaseKey -> msg
             , viewCase :: HTML msg
             }
-         -> HTML msg
-     }
+            -> HTML msg
+}
+
   -> DataUI HTML Identity Identity
        ( VariantMsg
            ( case1 :: Unit
