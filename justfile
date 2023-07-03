@@ -1,4 +1,4 @@
-purs_args := "--stash --censor-lib --censor-codes=ImplicitQualifiedImport"
+purs_args := "--stash --censor-lib --censor-codes=WildcardInferredType,ImplicitQualifiedImport,HidingImport"
 cfg_test := "--config test.dhall"
 
 build-strict:
@@ -14,7 +14,7 @@ test:
     spago {{cfg_test}} test --purs-args "{{purs_args}}"
 
 clean:
-    rm -rf .spago output .psa-stash .parcel-cache
+    rm -rf .spago output .psa-stash
 
 ide:
     spago {{cfg_test}} test --purs-args "{{purs_args}} --json-errors"
@@ -32,3 +32,11 @@ check-git-clean:
 
 ci: check-format build-strict test-strict check-git-clean
 
+ci-nix:
+    nix develop --command just ci
+
+suggest-list:
+    just ide 2>&1 | ps-suggest --list
+
+suggest-apply:
+    just ide 2>&1 | ps-suggest --apply

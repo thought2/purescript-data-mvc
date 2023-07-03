@@ -61,7 +61,7 @@ applyWrap
   :: forall srf fm fs msg sta a
    . DataUI srf fm fs msg sta a
   -> DataUI srf fm fs (fm msg) (fs sta) a
-applyWrap  (DataUI mkDataUi) = DataUI \c@(DataUICtx ctx) ->
+applyWrap (DataUI mkDataUi) = DataUI \c@(DataUICtx ctx) ->
   ctx.wrap $ mkDataUi c
 
 applyDataUi
