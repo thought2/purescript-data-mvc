@@ -20,6 +20,27 @@ type Init sta a = Opt a -> sta
 type View :: forall k. (k -> Type) -> k -> Type -> Type
 type View srf msg sta = sta -> srf msg
 
+---
+
+-- class HoistSurface a b srf1 srf2 | a -> b srf1 srf2 where
+--   hoistSurface :: (srf1 ~> srf2) -> a -> b
+
+-- instance HoistSurface (DataUiItf srf1 msg sta a) (DataUiItf srf2 msg sta a) srf1 srf2 where
+--   hoistSurface f (DataUiItf dataUi) = DataUiItf
+--     { init: dataUi.init
+--     , update: dataUi.update
+--     , view: f <<< dataUi.view
+--     , extract: dataUi.extract
+--     , name: dataUi.name
+--     }
+
+-- instance HoistSurface (DataUICtx srf1 fm fs) (DataUICtx srf2 fm fs) srf1 srf2 where
+--   hoistSurface f (DataUICtx ctx) = DataUICtx $ ctx
+--     { wrap: \dataUi -> wrap ctx $ hoistSurface f dataUi
+--     }
+
+---
+
 newtype DataUiItf srf msg sta a =
   DataUiItf
     { init :: Opt a -> sta
