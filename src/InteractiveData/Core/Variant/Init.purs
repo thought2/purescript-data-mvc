@@ -40,21 +40,21 @@ instance
 ---
 
 class InitVariantRL :: RowList Type -> Row Type -> Row Type -> Row Type -> Constraint
-class InitVariantRL rl inits r rsta | rl inits  -> r rsta where
+class InitVariantRL rl inits r rsta | rl inits -> r rsta where
   initVariantRL :: Proxy rl -> Record inits -> Variant r -> VariantState rsta
 
 instance InitVariantRL RL.Nil inits () rsta where
   initVariantRL _ _ = V.case_
 
 instance
-  ( InitVariantRL rl' inits  r' rsta
+  ( InitVariantRL rl' inits r' rsta
   , Row.Cons sym a r' r
   , Row.Cons sym (Opt a -> sta) initsx inits
   , Row.Cons sym sta rstax rsta
   , IsSymbol sym
   ) =>
-  InitVariantRL (RL.Cons sym x rl') inits  r rsta where
-  initVariantRL _ inits  =
+  InitVariantRL (RL.Cons sym x rl') inits r rsta where
+  initVariantRL _ inits =
     tail
       # V.on prxSym (Right >>> init >>> V.inj prxSym >>> VariantState)
     where

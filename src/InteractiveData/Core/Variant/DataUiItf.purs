@@ -6,9 +6,12 @@ import Data.Either (Either(..))
 import Data.Newtype (class Newtype)
 import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
+import Data.Tuple (Tuple(..))
 import Data.Variant (Variant)
+import Foreign.Object (Object)
+import Foreign.Object as O
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Types (DataUiItf(..), Error(..), Opt)
+import InteractiveData.Core.Types (DataPathSegment(..), DataPathTree(..), DataUiItf(..), Error(..), Opt)
 import InteractiveData.Core.Variant.Extract (class ExtractVariant, extractVariant)
 import InteractiveData.Core.Variant.Init (class InitVariant, initVariant)
 import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
@@ -18,6 +21,8 @@ import MVC.Variant.View (class ViewVariant, ViewArgs, viewVariant)
 import Prim.Row as Row
 import Record as Record
 import Type.Proxy (Proxy(..))
+import Type.Row.Homogeneous (class Homogeneous)
+import Unsafe.Coerce (unsafeCoerce)
 
 type DataUiItfVariantProps :: forall k. (Type -> Type) -> k -> Type
 type DataUiItfVariantProps srf initsym =
@@ -40,6 +45,7 @@ instance
   , MapProp "init" uis inits
   , MapProp "update" uis updates
   , MapProp "view" uis views
+  , MapProp "meta" uis metas
 
   , InitVariant inits initsym r rsta
   , UpdateVariant inits' updates rcase rmsg rsta
@@ -47,12 +53,14 @@ instance
   , ExtractVariant extracts rsta r
 
   , MapInits inits inits'
+
+  , Homogeneous metas (Array DataPathTree)
   ) =>
   DataUiItfVariant uis srf initsym rcase rmsg rsta r
   where
   dataUiItfVariant uis prxInitSym props =
     DataUiItf
-      { init, update, view, extract, name }
+      { init, update, view, extract, name, meta }
 
     where
     init = initVariant inits prxInitSym
@@ -60,6 +68,7 @@ instance
     view = viewVariant { view: props.view } views
     extract = extractVariant extracts
     name = "Variant"
+    meta = metaVariant (homogeneousToObject metas)
 
     inits' = mapInits inits
 
@@ -67,11 +76,13 @@ instance
     updates = mapProp prxUpdate uis
     views = mapProp prxView uis
     extracts = mapProp prxExtract uis
+    metas = mapProp prxMeta uis
 
     prxInit = Proxy :: _ "init"
     prxUpdate = Proxy :: _ "update"
     prxView = Proxy :: _ "view"
     prxExtract = Proxy :: _ "extract"
+    prxMeta = Proxy :: _ "meta"
 
 ---
 
@@ -147,3 +158,15 @@ data FnConvertInit = FnConvertInit
 
 instance Mapping FnConvertInit (Opt a -> b) b where
   mapping _ f = f $ Left ErrNotYetDefined
+
+---
+
+homogeneousToObject :: forall r a. Homogeneous r a => Record r -> Object a
+homogeneousToObject = unsafeCoerce
+
+---
+
+metaVariant :: Object (Array DataPathTree) -> Array DataPathTree
+metaVariant obj = obj
+  # (O.toUnfoldable :: _ -> Array _)
+  <#> (\(Tuple key value) -> DataPathTree (StaticCaseKey key) value)

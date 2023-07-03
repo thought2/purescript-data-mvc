@@ -15,36 +15,36 @@ with marked =
 
 with data-mvc =
   { repo = "https://github.com/thought2/purescript-data-mvc.git"
-  , version = "1a8d7e1ab72feaa622e2ef0fd84facfb0bba9f44"
+  , version = "b7d9be8e404530c46f4f6ce7ba540f637220250f"
   , dependencies = [ "heterogeneous", "maybe", "newtype", "prelude", "record", "variant" ]
   }
 
 
 with ts-bridge =
   { repo = "https://github.com/thought2/purescript-ts-bridge.git"
-  , version = "ae0fc665132edcb5d15454906e4750f51c826ae2"
+  , version = "3fe0e5dd6276822e1c43c1040356e3977559c26d"
   , dependencies = [ "aff", "aff-promise", "arrays", "console", "dts", "effect", "either", "foldable-traversable", "foreign-object", "literals", "maybe", "newtype", "node-buffer", "node-fs", "node-fs-aff", "node-path", "node-process", "nullable", "optparse", "ordered-collections", "ordered-set", "partial", "prelude", "record", "safe-coerce", "strings", "transformers", "tuples", "typelevel-prelude", "unsafe-coerce", "untagged-union", "variant", "variant-encodings" ]
   }
 
 
 with virtual-dom-react-basic =
   { repo = "https://github.com/thought2/purescript-virtual-dom-react-basic.git"
-  , version = "2efb8a3bb000fe53cfc76ebb770f5ffed0565e1d"
-  , dependencies = [ "console", "effect", "foreign", "foreign-object", "maybe", "prelude", "react-basic", "react-basic-dom", "strings", "tuples", "unsafe-coerce", "virtual-dom" ]
+  , version = "cbbdcd7acbb7d17cba03fb24f1c96da13a3dfb15"
+  , dependencies = [ "arrays", "console", "effect", "foreign", "foreign-object", "maybe", "prelude", "react-basic", "react-basic-dom", "react-basic-hooks", "strings", "tuples", "unsafe-coerce", "virtual-dom", "web-dom" ]
   }
 
 
 with virtual-dom-halogen =
   { repo = "https://github.com/thought2/purescript-virtual-dom-halogen.git"
-  , version = "e8ac7a6a67f4fd50ddb62c6c0bf37070803843a5"
-  , dependencies = [ "aff", "arrays", "bifunctors", "effect", "foreign", "halogen", "prelude", "safe-coerce", "strings", "tuples", "unsafe-coerce", "virtual-dom", "web-events", "web-html" ]
+  , version = "8cb3728c8152374523ac750effc1a8f69a20e235"
+  , dependencies = [ "aff", "bifunctors", "effect", "foreign", "halogen", "prelude", "safe-coerce", "strings", "tuples", "unsafe-coerce", "virtual-dom", "web-events", "web-html" ]
   }
 
 
 with virtual-dom =
   { repo = "https://github.com/thought2/purescript-virtual-dom.git"
-  , version = "2e9a410718444e2adfb62b05f6144a1fca0d20f5"
-  , dependencies = [ "either", "foreign", "maybe", "prelude", "strings", "transformers", "tuples", "variant" ]
+  , version = "f5ae781a03abb150aba17384b7bc20f92d341ce9"
+  , dependencies = [ "arrays", "either", "foldable-traversable", "foreign", "maybe", "newtype", "prelude", "strings", "these", "transformers", "tuples", "unordered-collections", "variant" ]
   }
 
 
@@ -71,15 +71,15 @@ with dts =
 
 with interactive-data-core =
   { repo = "ssh://git@github.com/thought2/purescript-interactive-data-core.git"
-  , version = "c26b63e5499dc6350041482a7185a13683e463ae"
+  , version = "a95b563e7761e09f6fb311057f50e7cab0ccce7d"
   , dependencies = [ "data-mvc", "either", "heterogeneous", "identity", "maybe", "newtype", "prelude", "profunctor", "record", "record-extra", "typelevel-prelude", "unsafe-coerce", "variant" ]
   }
 
 
 with interactive-data =
   { repo = "ssh://git@github.com/thought2/purescript-interactive-data.git"
-  , version = "8fe5119eec1b00449ea19f1f657df8bb2853e590"
-  , dependencies = [ "arraybuffer-types", "arrays", "convertable-options", "data-mvc", "debug", "effect", "either", "foldable-traversable", "identity", "integers", "interactive-data-core", "lists", "maybe", "newtype", "numbers", "ordered-collections", "prelude", "profunctor", "strings", "tuples", "unsafe-coerce", "virtual-dom" ]
+  , version = "e4766341f0573a62a4d7f4add4b06641594f084a"
+  , dependencies = [ "arraybuffer-types", "arrays", "console", "convertable-options", "data-mvc", "debug", "dodo-printer", "effect", "either", "foldable-traversable", "functors", "identity", "integers", "interactive-data-core", "labeled-data", "lazy", "lists", "maybe", "newtype", "numbers", "ordered-collections", "prelude", "profunctor", "record", "safe-coerce", "strings", "these", "tuples", "type-equality", "typelevel-prelude", "unordered-collections", "unsafe-coerce", "variant", "virtual-dom" ]
   }
 
 

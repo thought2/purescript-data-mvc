@@ -1,7 +1,9 @@
 { name = "interactive-data-core"
 , dependencies =
   [ "data-mvc"
+  , "effect"
   , "either"
+  , "foreign-object"
   , "heterogeneous"
   , "identity"
   , "maybe"
@@ -10,6 +12,8 @@
   , "profunctor"
   , "record"
   , "record-extra"
+  , "strings"
+  , "tuples"
   , "typelevel-prelude"
   , "unsafe-coerce"
   , "variant"
