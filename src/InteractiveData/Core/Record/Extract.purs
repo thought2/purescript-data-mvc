@@ -3,7 +3,7 @@ module InteractiveData.Core.Record.Extract where
 import Data.Either (Either)
 import Data.Symbol (class IsSymbol)
 import Heterogeneous.Mapping (class HMapWithIndex, class MappingWithIndex, hmapWithIndex)
-import InteractiveData.Core.Types (Error, Opt)
+import InteractiveData.Core.Types (IDError, Opt)
 import InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row
@@ -19,7 +19,7 @@ class ExtractRecord extracts rsta r | extracts -> rsta r where
 instance
   ( HMapWithIndex (F rsta) (Record extracts) (Record rr)
   , RowToList rr rl
-  , SequenceRecord rl rr () r (Either Error)
+  , SequenceRecord rl rr () r (Either IDError)
   ) =>
   ExtractRecord extracts rsta r where
   extractRecord extracts rsta = sequenceRecord rr

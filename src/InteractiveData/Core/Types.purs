@@ -32,7 +32,7 @@ newtype DataUiItf srf msg sta a =
 
 dataUiItfToUI :: forall html msg sta a. DataUiItf html msg sta a -> MVC.UI html msg sta
 dataUiItfToUI (DataUiItf dataUi) =
-  { init: dataUi.init $ Left ErrNotYetDefined
+  { init: dataUi.init $ Left IDErrNotYetDefined
   , update: dataUi.update
   , view: dataUi.view
   }
@@ -121,13 +121,13 @@ unDataUICtx (DataUICtx impl) = impl
 
 ---
 
-type Opt a = Either Error a
+type Opt a = Either IDError a
 
-data Error = ErrNotYetDefined | ErrMsg String
+data IDError = IDErrNotYetDefined | IDErrMsg String
 
-derive instance Generic Error _
+derive instance Generic IDError _
 
-instance Show Error where
+instance Show IDError where
   show = genericShow
 
 derive instance Newtype (DataUI srf fm fs msg sta a) _
