@@ -125,6 +125,10 @@ type Opt a = Either IDError a
 
 data IDError = IDErrNotYetDefined | IDErrMsg String
 
+derive instance Ord IDError
+
+derive instance Eq IDError
+
 derive instance Generic IDError _
 
 instance Show IDError where
