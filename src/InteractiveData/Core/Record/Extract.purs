@@ -3,8 +3,8 @@ module InteractiveData.Core.Record.Extract where
 import Prelude
 
 import Data.Either (Either(..))
-import Data.Symbol (class IsSymbol)
-import InteractiveData.Core.Types (Opt)
+import Data.Symbol (class IsSymbol, reflectSymbol)
+import InteractiveData.Core.Types (DataPathSegment(..), DataPathSegmentField(..), Opt, scopeOpt)
 import InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row
@@ -69,7 +69,10 @@ instance
     tail = extractRecordRL prxRl' extracts (RecordState states)
 
     head :: Opt a
-    head = extract state
+    head = extract state # scopeOpt pathSeg
+
+    pathSeg :: DataPathSegment
+    pathSeg = SegField $ SegStaticKey (reflectSymbol prxSym)
 
     extract :: sta -> Opt a
     extract = Record.get prxSym extracts
