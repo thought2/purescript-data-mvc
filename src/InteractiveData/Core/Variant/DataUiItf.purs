@@ -8,7 +8,7 @@ import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
 import Data.Variant (Variant)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Types (DataUiItf(..), IDError(..), Opt)
+import InteractiveData.Core.Types (DataUiItf(..), IDError(..), IDErrorCase(..), Opt)
 import InteractiveData.Core.Variant.Extract (class ExtractVariant, extractVariant)
 import InteractiveData.Core.Variant.Init (class InitVariant, initVariant)
 import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
@@ -146,4 +146,4 @@ instance (HMap FnConvertInit { | inits } { | inits' }) => MapInits inits inits' 
 data FnConvertInit = FnConvertInit
 
 instance Mapping FnConvertInit (Opt a -> b) b where
-  mapping _ f = f $ Left IDErrNotYetDefined
+  mapping _ f = f $ Left $ IDError [] IDErrNotYetDefined

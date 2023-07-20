@@ -32,7 +32,7 @@ newtype DataUiItf srf msg sta a =
 
 dataUiItfToUI :: forall html msg sta a. DataUiItf html msg sta a -> MVC.UI html msg sta
 dataUiItfToUI (DataUiItf dataUi) =
-  { init: dataUi.init $ Left IDErrNotYetDefined
+  { init: dataUi.init $ Left $ IDError [] IDErrNotYetDefined
   , update: dataUi.update
   , view: dataUi.view
   }
@@ -121,15 +121,37 @@ unDataUICtx (DataUICtx impl) = impl
 
 ---
 
+data DataPathSegment
+  = SegCase String
+  | SegField DataPathSegmentField
+
+data DataPathSegmentField
+  = SegStaticKey String
+  | SegStaticIndex Int
+  | SegDynamicKey String
+  | SegDynamicIndex Int
+  | SegVirtualKey String
+
+type DataPath = Array DataPathSegment
+
 type Opt a = Either IDError a
 
-data IDError = IDErrNotYetDefined | IDErrMsg String
+data IDErrorCase = IDErrNotYetDefined | IDErrMsg String
+
+scopeError :: DataPathSegment -> IDError -> IDError
+scopeError seg (IDError path case_) = IDError ([ seg ] <> path) case_
+
+data IDError = IDError DataPath IDErrorCase
 
 derive instance Ord IDError
 
 derive instance Eq IDError
 
 derive instance Generic IDError _
+
+derive instance Generic DataPathSegment _
+derive instance Generic DataPathSegmentField _
+derive instance Generic IDErrorCase _
 
 instance Show IDError where
   show = genericShow
@@ -138,3 +160,19 @@ derive instance Newtype (DataUI srf fm fs msg sta a) _
 
 derive instance Newtype (DataUiItf srf msg sta a) _
 
+instance Show DataPathSegment where
+  show = genericShow
+
+instance Show DataPathSegmentField where
+  show = genericShow
+
+instance Show IDErrorCase where
+  show = genericShow
+
+derive instance Ord DataPathSegment
+derive instance Ord DataPathSegmentField
+derive instance Ord IDErrorCase
+
+derive instance Eq DataPathSegment
+derive instance Eq DataPathSegmentField
+derive instance Eq IDErrorCase

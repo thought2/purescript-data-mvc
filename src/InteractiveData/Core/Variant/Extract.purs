@@ -2,10 +2,11 @@ module InteractiveData.Core.Variant.Extract where
 
 import Prelude
 
-import Data.Symbol (class IsSymbol)
+import Data.Bifunctor (lmap)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Variant (Variant)
 import Data.Variant as V
-import InteractiveData.Core.Types (Opt)
+import InteractiveData.Core.Types (DataPathSegment(..), Opt, scopeError)
 import InteractiveData.TestTypes (S1, T1)
 import MVC.Variant.Types (VariantState(..))
 import Prim.Row as Row
@@ -47,10 +48,14 @@ instance
     tail
       # V.on prxSym head
     where
+    head :: sta -> Opt (Variant r)
     head = extract >>> map (V.inj prxSym)
 
+    pathSeg :: DataPathSegment
+    pathSeg = SegCase (reflectSymbol prxSym)
+
     extract :: sta -> Opt a
-    extract = Record.get prxSym extracts
+    extract = Record.get prxSym extracts >>> lmap (scopeError pathSeg)
 
     tail :: Variant rsta' -> Opt (Variant r)
     tail = extractVariantRL prxRl' extracts

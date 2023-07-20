@@ -1,6 +1,7 @@
 { name = "interactive-data-core"
 , dependencies =
-  [ "data-mvc"
+  [ "bifunctors"
+  , "data-mvc"
   , "effect"
   , "either"
   , "heterogeneous"

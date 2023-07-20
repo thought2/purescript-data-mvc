@@ -1,9 +1,12 @@
 module InteractiveData.Core.Record.Extract where
 
+import Prelude
+
+import Data.Bifunctor (lmap)
 import Data.Either (Either)
-import Data.Symbol (class IsSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Heterogeneous.Mapping (class HMapWithIndex, class MappingWithIndex, hmapWithIndex)
-import InteractiveData.Core.Types (IDError, Opt)
+import InteractiveData.Core.Types (DataPathSegment(..), DataPathSegmentField(..), IDError, Opt, scopeError)
 import InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row
@@ -33,8 +36,15 @@ instance
   , IsSymbol sym
   ) =>
   MappingWithIndex (F rsta) (Proxy sym) (sta -> Opt a) (Opt a) where
-  mappingWithIndex (F (RecordState rsta)) prxSym f = f state
+  mappingWithIndex (F (RecordState rsta)) prxSym f =
+    lmap (scopeError pathSeg) result
     where
+    pathSeg :: DataPathSegment
+    pathSeg = SegField $ SegStaticKey (reflectSymbol prxSym)
+
+    result :: Opt a
+    result = f state
+
     state = Record.get prxSym rsta
 
 ---

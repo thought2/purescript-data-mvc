@@ -6,7 +6,7 @@ import Data.Either (Either(..))
 import Data.Symbol (class IsSymbol)
 import Data.Variant (Variant)
 import Data.Variant as V
-import InteractiveData.Core.Types (IDError(..), Opt)
+import InteractiveData.Core.Types (IDError(..), IDErrorCase(..), Opt)
 import InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
 import MVC.Variant.Types (VariantState(..))
 import Prim.Row as Row
@@ -31,7 +31,7 @@ instance
     Left _ -> VariantState $ V.inj prxInitSym state
     Right va -> initVariantRL prxRl inits va
     where
-    state = init (Left IDErrNotYetDefined)
+    state = init (Left $ IDError [] IDErrNotYetDefined)
     init = Record.get prxInitSym inits
 
     prxInitSym = Proxy :: _ initsym
