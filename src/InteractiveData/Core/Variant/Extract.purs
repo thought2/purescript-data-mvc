@@ -6,7 +6,7 @@ import Data.Bifunctor (lmap)
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Variant (Variant)
 import Data.Variant as V
-import InteractiveData.Core.Types (DataPathSegment(..), Opt, scopeError)
+import InteractiveData.Core.Types (DataPathSegment(..), Opt, scopeError, scopeOpt)
 import InteractiveData.TestTypes (S1, T1)
 import MVC.Variant.Types (VariantState(..))
 import Prim.Row as Row
@@ -55,7 +55,7 @@ instance
     pathSeg = SegCase (reflectSymbol prxSym)
 
     extract :: sta -> Opt a
-    extract = Record.get prxSym extracts >>> lmap (scopeError pathSeg)
+    extract = Record.get prxSym extracts >>> scopeOpt pathSeg
 
     tail :: Variant rsta' -> Opt (Variant r)
     tail = extractVariantRL prxRl' extracts

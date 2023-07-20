@@ -2,17 +2,17 @@ module InteractiveData.Core.Variant.DataUiItf where
 
 import Prelude
 
-import Data.Either (Either(..))
+import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
 import Data.Variant (Variant)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Types (DataUiItf(..), IDError(..), IDErrorCase(..), Opt)
+import InteractiveData.Core.Types (DataUiItf(..))
 import InteractiveData.Core.Variant.Extract (class ExtractVariant, extractVariant)
 import InteractiveData.Core.Variant.Init (class InitVariant, initVariant)
 import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
-import MVC.Variant.Types (VariantMsg, VariantState)
+import MVC.Variant.Types (CaseKey(..), VariantMsg, VariantState)
 import MVC.Variant.Update (class UpdateVariant, updateVariant)
 import MVC.Variant.View (class ViewVariant, ViewArgs, viewVariant)
 import Prim.Row as Row
@@ -82,7 +82,15 @@ testDataUiItfVariant
        , case3 :: DataUiItf HTML M3 S3 T3
        )
   -> Proxy "case1"
-  -> _
+  -> { view ::
+         forall msg
+          . { caseKey :: CaseKey
+            , caseKeys :: Array CaseKey
+            , mkMsg :: CaseKey -> msg
+            , viewCase :: HTML msg
+            }
+         -> HTML msg
+     }
   -> DataUiItf HTML
        ( VariantMsg
            ( case1 :: Unit
@@ -145,5 +153,5 @@ instance (HMap FnConvertInit { | inits } { | inits' }) => MapInits inits inits' 
 
 data FnConvertInit = FnConvertInit
 
-instance Mapping FnConvertInit (Opt a -> b) b where
-  mapping _ f = f $ Left $ IDError [] IDErrNotYetDefined
+instance Mapping FnConvertInit (Maybe a -> b) b where
+  mapping _ f = f Nothing

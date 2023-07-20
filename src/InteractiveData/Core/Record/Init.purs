@@ -2,8 +2,8 @@ module InteractiveData.Core.Record.Init where
 
 import Prelude
 
+import Data.Maybe (Maybe)
 import Data.Symbol (class IsSymbol)
-import InteractiveData.Core.Types (Opt)
 import InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row
@@ -14,7 +14,7 @@ import Type.Function (type ($))
 import Type.Proxy (Proxy(..))
 
 class InitRecord inits r rsta | inits -> r rsta where
-  initRecord :: Record inits -> Opt (Record r) -> RecordState rsta
+  initRecord :: Record inits -> Maybe (Record r) -> RecordState rsta
 
 instance
   ( InitRecordRL rl inits r rsta
@@ -30,14 +30,14 @@ instance
 
 class InitRecordRL :: RowList Type -> Row Type -> Row Type -> Row Type -> Constraint
 class InitRecordRL rl inits r rsta | rl inits -> r rsta where
-  initRecordRL :: Proxy rl -> Record inits -> Opt (Record r) -> RecordState rsta
+  initRecordRL :: Proxy rl -> Record inits -> Maybe (Record r) -> RecordState rsta
 
 instance InitRecordRL RL.Nil inits r () where
   initRecordRL _ _ _ = RecordState {}
 
 instance
   ( InitRecordRL rl' inits r rsta'
-  , Row.Cons sym (Opt a -> sta) initsx inits
+  , Row.Cons sym (Maybe a -> sta) initsx inits
   , Row.Cons sym a rx r
   , Row.Cons sym sta rsta' rsta
   , Row.Lacks sym rsta'
@@ -59,6 +59,7 @@ instance
     tail :: RecordState rsta'
     tail = initRecordRL prxRl' inits optRec
 
+    init :: Maybe a -> sta
     init = Record.get prxSym inits
 
     prxSym = Proxy :: _ sym
@@ -68,11 +69,11 @@ instance
 
 testInitRecord
   :: Record
-       ( field1 :: Opt T1 -> S1
-       , field2 :: Opt T2 -> S2
-       , field3 :: Opt T3 -> S3
+       ( field1 :: Maybe T1 -> S1
+       , field2 :: Maybe T2 -> S2
+       , field3 :: Maybe T3 -> S3
        )
-  -> Opt $ Record
+  -> Maybe $ Record
        ( field1 :: T1
        , field2 :: T2
        , field3 :: T3

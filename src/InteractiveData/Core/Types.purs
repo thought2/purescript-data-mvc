@@ -2,8 +2,11 @@ module InteractiveData.Core.Types where
 
 import Prelude
 
-import Data.Either (Either(..))
+import Data.Array.NonEmpty (NonEmptyArray)
+import Data.Bifunctor (lmap)
+import Data.Either (Either)
 import Data.Generic.Rep (class Generic)
+import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 import Data.Newtype as NT
 import Data.Profunctor (lcmap)
@@ -14,7 +17,7 @@ type Extract sta a = sta -> Opt a
 
 type Update msg sta = msg -> sta -> sta
 
-type Init sta a = Opt a -> sta
+type Init sta a = Maybe a -> sta
 
 type View :: forall k. (k -> Type) -> k -> Type -> Type
 type View srf msg sta = sta -> srf msg
@@ -23,7 +26,7 @@ type View srf msg sta = sta -> srf msg
 
 newtype DataUiItf srf msg sta a =
   DataUiItf
-    { init :: Opt a -> sta
+    { init :: Maybe a -> sta
     , update :: msg -> sta -> sta
     , view :: sta -> srf msg
     , extract :: sta -> Opt a
@@ -32,7 +35,7 @@ newtype DataUiItf srf msg sta a =
 
 dataUiItfToUI :: forall html msg sta a. DataUiItf html msg sta a -> MVC.UI html msg sta
 dataUiItfToUI (DataUiItf dataUi) =
-  { init: dataUi.init $ Left $ IDError [] IDErrNotYetDefined
+  { init: dataUi.init Nothing
   , update: dataUi.update
   , view: dataUi.view
   }
@@ -134,12 +137,18 @@ data DataPathSegmentField
 
 type DataPath = Array DataPathSegment
 
-type Opt a = Either IDError a
+type Opt a = Either (NonEmptyArray IDError) a
 
 data IDErrorCase = IDErrNotYetDefined | IDErrMsg String
 
 scopeError :: DataPathSegment -> IDError -> IDError
 scopeError seg (IDError path case_) = IDError ([ seg ] <> path) case_
+
+scopeErrors :: DataPathSegment -> NonEmptyArray IDError -> NonEmptyArray IDError
+scopeErrors seg = map (scopeError seg)
+
+scopeOpt :: forall a. DataPathSegment -> Opt a -> Opt a
+scopeOpt seg = lmap (scopeErrors seg)
 
 data IDError = IDError DataPath IDErrorCase
 
