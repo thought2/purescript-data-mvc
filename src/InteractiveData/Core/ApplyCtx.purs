@@ -1,4 +1,9 @@
-module InteractiveData.Core.ApplyCtx where
+module InteractiveData.Core.ApplyCtx
+  ( class ApplyCtx
+  , mapApplyCtx
+  , class ApplyCtxRL
+  , mapApplyCtxRL
+  ) where
 
 import Data.Symbol (class IsSymbol)
 import InteractiveData.Core.Types (DataUI, DataUICtx, DataUiItf, applyWrap, runDataUi)
@@ -8,21 +13,47 @@ import Prim.RowList as RL
 import Record as Record
 import Type.Proxy (Proxy(..))
 
-class ApplyCtx a datauis uis | datauis -> uis a where
+--------------------------------------------------------------------------------
+--- ApplyCtx
+--------------------------------------------------------------------------------
+
+class
+  ApplyCtx
+    (a :: Type)
+    (datauis :: Row Type)
+    (uis :: Row Type)
+  | datauis -> uis a
+  where
   mapApplyCtx :: a -> { | datauis } -> { | uis }
 
-instance (ApplyCtxRL rl a datauis uis, RowToList datauis rl) => ApplyCtx a datauis uis where
+instance
+  ( ApplyCtxRL rl a datauis uis
+  , RowToList datauis rl
+  ) =>
+  ApplyCtx a datauis uis
+  where
+  mapApplyCtx :: a -> Record datauis -> Record uis
   mapApplyCtx = mapApplyCtxRL prxRl
     where
-    prxRl = Proxy :: _ rl
+    prxRl :: Proxy rl
+    prxRl = Proxy
 
----
+--------------------------------------------------------------------------------
+--- ApplyCtxRL
+--------------------------------------------------------------------------------
 
-class ApplyCtxRL :: RowList Type -> Type -> Row Type -> Row Type -> Constraint
-class ApplyCtxRL rl a datauis uis | datauis -> uis a where
+class
+  ApplyCtxRL
+    (rl :: RowList Type)
+    (a :: Type)
+    (datauis :: Row Type)
+    (uis :: Row Type)
+  | datauis -> uis a where
   mapApplyCtxRL :: Proxy rl -> a -> { | datauis } -> { | uis }
 
-instance ApplyCtxRL RL.Nil a datauis () where
+instance ApplyCtxRL RL.Nil a datauis ()
+  where
+  mapApplyCtxRL :: Proxy RL.Nil -> a -> { | datauis } -> { | () }
   mapApplyCtxRL _ _ _ = {}
 
 instance
@@ -32,9 +63,12 @@ instance
   , IsSymbol sym
   , Row.Lacks sym uis'
   ) =>
-  ApplyCtxRL (RL.Cons sym x rl') (DataUICtx srf fm fs) datauis uis where
+  ApplyCtxRL (RL.Cons sym x rl') (DataUICtx srf fm fs) datauis uis
+  where
+  mapApplyCtxRL :: Proxy (RL.Cons sym x rl') -> DataUICtx srf fm fs -> { | datauis } -> { | uis }
   mapApplyCtxRL _ ctx datauis =
     Record.insert prxSym ui tail
+
     where
     dataui :: DataUI srf fm fs msg sta a
     dataui = Record.get prxSym datauis
@@ -48,5 +82,6 @@ instance
     tail :: { | uis' }
     tail = mapApplyCtxRL (Proxy :: Proxy rl') ctx datauis
 
-    prxSym = Proxy :: _ sym
+    prxSym :: Proxy sym
+    prxSym = Proxy
 
