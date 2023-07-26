@@ -1,22 +1,35 @@
-module InteractiveData.Core.Record.DataUiItf where
+module InteractiveData.Core.Record.DataUiItf
+  ( FnRecordGet
+  , class DataUiItfRecord
+  , dataUiItfRecord
+  , class MapProp
+  , mapProp
+  ) where
 
 import Prelude
 
+import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype)
 import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
 import InteractiveData.Core.Record.Extract (class ExtractRecord, extractRecord)
 import InteractiveData.Core.Record.Init (class InitRecord, initRecord)
-import InteractiveData.Core.Types (DataUiItf(..))
-import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
+import InteractiveData.Core.Types (DataUiItf(..), Opt)
 import MVC.Record (class UpdateRecord, class ViewRecord, RecordMsg, RecordState, updateRecord, viewRecord)
 import MVC.Record.UI (UIRecordProps)
 import Prim.Row as Row
 import Record as Record
 import Type.Proxy (Proxy(..))
 
-class DataUiItfRecord uis srf rmsg rsta r where
+class
+  DataUiItfRecord
+    (uis :: Row Type)
+    (srf :: Type -> Type)
+    (rmsg :: Row Type)
+    (rsta :: Row Type)
+    (r :: Row Type)
+  where
   dataUiItfRecord
     :: UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
     -> Record uis
@@ -35,82 +48,68 @@ instance
   ) =>
   DataUiItfRecord uis srf rmsg rsta r
   where
+  dataUiItfRecord
+    :: UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
+    -> Record uis
+    -> DataUiItf srf (RecordMsg rmsg) (RecordState rsta) (Record r)
   dataUiItfRecord props uis = DataUiItf { init, update, view, extract, name }
 
     where
+    -- Fields
+
+    init :: Maybe (Record r) -> RecordState rsta
     init = initRecord inits
+
+    update :: RecordMsg rmsg -> RecordState rsta -> RecordState rsta
     update = updateRecord updates
+
+    view :: RecordState rsta -> srf (RecordMsg rmsg)
     view = viewRecord views { viewEntries: props.viewEntries }
+
+    extract :: RecordState rsta -> Opt (Record r)
     extract = extractRecord extracts
+
+    name :: String
     name = "Record"
 
+    -- Records
+
+    inits :: Record inits
     inits = mapProp prxInit uis
+
+    updates :: Record updates
     updates = mapProp prxUpdate uis
+
+    views :: Record views
     views = mapProp prxView uis
+
+    extracts :: Record extracts
     extracts = mapProp prxExtract uis
 
-    prxInit = Proxy :: _ "init"
-    prxUpdate = Proxy :: _ "update"
-    prxView = Proxy :: _ "view"
-    prxExtract = Proxy :: _ "extract"
+    -- Proxies
 
----
+    prxInit :: Proxy "init"
+    prxInit = Proxy
 
-testDataUiItfRecord
-  :: { viewEntries ::
-         Array
-           { key :: String
-           , viewValue ::
-               HTML
-                 ( RecordMsg
-                     ( field1 :: M1
-                     , field2 :: M2
-                     , field3 :: M3
-                     )
-                 )
-           }
-         -> HTML
-              ( RecordMsg
-                  ( field1 :: M1
-                  , field2 :: M2
-                  , field3 :: M3
-                  )
-              )
-     }
-  -> Record
-       ( field1 :: DataUiItf HTML M1 S1 T1
-       , field2 :: DataUiItf HTML M2 S2 T2
-       , field3 :: DataUiItf HTML M3 S3 T3
-       )
-  -> DataUiItf HTML
-       ( RecordMsg
-           ( field1 :: M1
-           , field2 :: M2
-           , field3 :: M3
-           )
-       )
-       ( RecordState
-           ( field1 :: S1
-           , field2 :: S2
-           , field3 :: S3
-           )
-       )
-       ( Record
-           ( field1 :: T1
-           , field2 :: T2
-           , field3 :: T3
-           )
-       )
-testDataUiItfRecord = dataUiItfRecord
+    prxUpdate :: Proxy "update"
+    prxUpdate = Proxy
 
----
+    prxView :: Proxy "view"
+    prxView = Proxy
+
+    prxExtract :: Proxy "extract"
+    prxExtract = Proxy
 
 -------------------------------------------------------------------------------
---- Utils
+--- MapProp
 -------------------------------------------------------------------------------
 
-class MapProp :: Symbol -> Row Type -> Row Type -> Constraint
-class MapProp sym ri ro | sym ri -> ro where
+class
+  MapProp
+    (sym :: Symbol)
+    (ri :: Row Type)
+    (ro :: Row Type)
+  | sym ri -> ro where
   mapProp :: Proxy sym -> { | ri } -> { | ro }
 
 instance
@@ -118,9 +117,10 @@ instance
   ) =>
   MapProp sym ri ro
   where
+  mapProp :: Proxy sym -> Record ri -> Record ro
   mapProp sym = hmap (FnRecordGet sym)
 
-data FnRecordGet :: forall k. k -> Type
+data FnRecordGet :: Symbol -> Type
 data FnRecordGet sym = FnRecordGet (Proxy sym)
 
 instance
@@ -130,5 +130,7 @@ instance
   ) =>
   Mapping (FnRecordGet sym) nt a
   where
-  mapping (FnRecordGet prxSym) = Record.get prxSym <<< NT.unwrap
+  mapping :: FnRecordGet sym -> nt -> a
+  mapping (FnRecordGet prxSym) =
+    Record.get prxSym <<< NT.unwrap
 

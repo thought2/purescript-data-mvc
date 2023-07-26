@@ -1,4 +1,14 @@
-module InteractiveData.Core.Variant.DataUiItf where
+module InteractiveData.Core.Variant.DataUiItf
+  ( DataUiItfVariantProps
+  , FnConvertInit(..)
+  , FnRecordGet
+  , class DataUiItfVariant
+  , class MapInits
+  , class MapProp
+  , dataUiItfVariant
+  , mapInits
+  , mapProp
+  ) where
 
 import Prelude
 
@@ -8,25 +18,34 @@ import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
 import Data.Variant (Variant)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Types (DataUiItf(..))
+import InteractiveData.Core.Types (DataUiItf(..), Opt)
 import InteractiveData.Core.Variant.Extract (class ExtractVariant, extractVariant)
 import InteractiveData.Core.Variant.Init (class InitVariant, initVariant)
-import InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
-import MVC.Variant.Types (CaseKey(..), VariantMsg, VariantState)
+import MVC.Variant.Types (VariantMsg, VariantState)
 import MVC.Variant.Update (class UpdateVariant, updateVariant)
 import MVC.Variant.View (class ViewVariant, ViewArgs, viewVariant)
 import Prim.Row as Row
 import Record as Record
 import Type.Proxy (Proxy(..))
 
-type DataUiItfVariantProps :: forall k. (Type -> Type) -> k -> Type
+type DataUiItfVariantProps :: (Type -> Type) -> Symbol -> Type
 type DataUiItfVariantProps srf initsym =
   { view :: forall msg. ViewArgs srf msg -> srf msg
   }
 
-class DataUiItfVariant :: Row Type -> (Type -> Type) -> Symbol -> Row Type -> Row Type -> Row Type -> Row Type -> Constraint
+-------------------------------------------------------------------------------
+--- DataUiItfVariant
+-------------------------------------------------------------------------------
+
 class
-  DataUiItfVariant uis srf initsym rcase rmsg rsta r
+  DataUiItfVariant
+    (uis :: Row Type)
+    (srf :: Type -> Type)
+    (initsym :: Symbol)
+    (rcase :: Row Type)
+    (rmsg :: Row Type)
+    (rsta :: Row Type)
+    (r :: Row Type)
   | uis srf initsym rcase -> rmsg rsta r
   where
   dataUiItfVariant
@@ -50,78 +69,75 @@ instance
   ) =>
   DataUiItfVariant uis srf initsym rcase rmsg rsta r
   where
+  dataUiItfVariant
+    :: Record uis
+    -> Proxy initsym
+    -> DataUiItfVariantProps srf initsym
+    -> DataUiItf srf (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
   dataUiItfVariant uis prxInitSym props =
     DataUiItf
       { init, update, view, extract, name }
 
     where
+    -- Fields
+
+    init :: Maybe (Variant r) -> VariantState rsta
     init = initVariant inits prxInitSym
+
+    update :: VariantMsg rcase rmsg -> VariantState rsta -> VariantState rsta
     update = updateVariant inits' updates
+
+    view :: VariantState rsta -> srf (VariantMsg rcase rmsg)
     view = viewVariant { view: props.view } views
+
+    extract :: VariantState rsta -> Opt (Variant r)
     extract = extractVariant extracts
+
+    name :: String
     name = "Variant"
 
+    -- Records
+
+    inits' :: Record inits'
     inits' = mapInits inits
 
+    inits :: Record inits
     inits = mapProp prxInit uis
+
+    updates :: Record updates
     updates = mapProp prxUpdate uis
+
+    views :: Record views
     views = mapProp prxView uis
+
+    extracts :: Record extracts
     extracts = mapProp prxExtract uis
 
-    prxInit = Proxy :: _ "init"
-    prxUpdate = Proxy :: _ "update"
-    prxView = Proxy :: _ "view"
-    prxExtract = Proxy :: _ "extract"
+    -- Proxies
 
----
+    prxInit :: Proxy "init"
+    prxInit = Proxy
 
-testDataUiItfVariant
-  :: Record
-       ( case1 :: DataUiItf HTML M1 S1 T1
-       , case2 :: DataUiItf HTML M2 S2 T2
-       , case3 :: DataUiItf HTML M3 S3 T3
-       )
-  -> Proxy "case1"
-  -> { view ::
-         forall msg
-          . { caseKey :: CaseKey
-            , caseKeys :: Array CaseKey
-            , mkMsg :: CaseKey -> msg
-            , viewCase :: HTML msg
-            }
-         -> HTML msg
-     }
-  -> DataUiItf HTML
-       ( VariantMsg
-           ( case1 :: Unit
-           , case2 :: Unit
-           , case3 :: Unit
-           )
-           ( case1 :: M1
-           , case2 :: M2
-           , case3 :: M3
-           )
-       )
-       ( VariantState
-           ( case1 :: S1
-           , case2 :: S2
-           , case3 :: S3
-           )
-       )
-       ( Variant
-           ( case1 :: T1
-           , case2 :: T2
-           , case3 :: T3
-           )
-       )
-testDataUiItfVariant = dataUiItfVariant
+    prxUpdate :: Proxy "update"
+    prxUpdate = Proxy
+
+    prxView :: Proxy "view"
+    prxView = Proxy
+
+    prxExtract :: Proxy "extract"
+    prxExtract = Proxy
 
 -------------------------------------------------------------------------------
---- Utils
+--- MapProp
 -------------------------------------------------------------------------------
 
-class MapProp :: Symbol -> Row Type -> Row Type -> Constraint
-class MapProp sym ri ro | sym ri -> ro where
+class
+  MapProp
+    (sym :: Symbol)
+    (ri :: Row Type)
+    (ro :: Row Type)
+  | sym ri -> ro
+  where
   mapProp :: Proxy sym -> { | ri } -> { | ro }
 
 instance
@@ -129,9 +145,10 @@ instance
   ) =>
   MapProp sym ri ro
   where
+  mapProp :: Proxy sym -> Record ri -> Record ro
   mapProp sym = hmap (FnRecordGet sym)
 
-data FnRecordGet :: forall k. k -> Type
+data FnRecordGet :: Symbol -> Type
 data FnRecordGet sym = FnRecordGet (Proxy sym)
 
 instance
@@ -141,17 +158,31 @@ instance
   ) =>
   Mapping (FnRecordGet sym) nt a
   where
-  mapping (FnRecordGet prxSym) = Record.get prxSym <<< NT.unwrap
+  mapping :: FnRecordGet sym -> nt -> a
+  mapping (FnRecordGet prxSym) =
+    Record.get prxSym <<< NT.unwrap
 
----
+-------------------------------------------------------------------------------
+--- MapInits
+-------------------------------------------------------------------------------
 
-class MapInits inits inits' | inits -> inits' where
+class
+  MapInits (inits :: Row Type) (inits' :: Row Type)
+  | inits -> inits'
+  where
   mapInits :: Record inits -> Record inits'
 
-instance (HMap FnConvertInit { | inits } { | inits' }) => MapInits inits inits' where
+instance
+  ( HMap FnConvertInit { | inits } { | inits' }
+  ) =>
+  MapInits inits inits'
+  where
+  mapInits :: Record inits -> Record inits'
   mapInits = hmap FnConvertInit
 
 data FnConvertInit = FnConvertInit
 
-instance Mapping FnConvertInit (Maybe a -> b) b where
+instance Mapping FnConvertInit (Maybe a -> b) b
+  where
+  mapping :: FnConvertInit -> (Maybe a -> b) -> b
   mapping _ f = f Nothing

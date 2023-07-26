@@ -1,19 +1,32 @@
-module InteractiveData.Core.Record.Init where
+module InteractiveData.Core.Record.Init
+  ( class InitRecord
+  , initRecord
+  , class InitRecordRL
+  , initRecordRL
+  ) where
 
 import Prelude
 
 import Data.Maybe (Maybe)
 import Data.Symbol (class IsSymbol)
-import InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)
 import Prim.RowList as RL
 import Record as Record
-import Type.Function (type ($))
 import Type.Proxy (Proxy(..))
 
-class InitRecord inits r rsta | inits -> r rsta where
+--------------------------------------------------------------------------------
+--- InitRecord
+--------------------------------------------------------------------------------
+
+class
+  InitRecord
+    (inits :: Row Type)
+    (r :: Row Type)
+    (rsta :: Row Type)
+  | inits -> r rsta
+  where
   initRecord :: Record inits -> Maybe (Record r) -> RecordState rsta
 
 instance
@@ -22,17 +35,30 @@ instance
   ) =>
   InitRecord inits r rsta
   where
-  initRecord inits = initRecordRL prxRl inits
+  initRecord :: Record inits -> Maybe (Record r) -> RecordState rsta
+  initRecord inits =
+    initRecordRL prxRl inits
     where
-    prxRl = Proxy :: _ rl
+    prxRl :: Proxy rl
+    prxRl = Proxy
 
----
+--------------------------------------------------------------------------------
+--- InitRecordRL
+--------------------------------------------------------------------------------
 
-class InitRecordRL :: RowList Type -> Row Type -> Row Type -> Row Type -> Constraint
-class InitRecordRL rl inits r rsta | rl inits -> r rsta where
+class
+  InitRecordRL
+    (rl :: RowList Type)
+    (inits :: Row Type)
+    (r :: Row Type)
+    (rsta :: Row Type)
+  | rl inits -> r rsta
+  where
   initRecordRL :: Proxy rl -> Record inits -> Maybe (Record r) -> RecordState rsta
 
-instance InitRecordRL RL.Nil inits r () where
+instance InitRecordRL RL.Nil inits r ()
+  where
+  initRecordRL :: Proxy RL.Nil -> Record inits -> Maybe (Record r) -> RecordState ()
   initRecordRL _ _ _ = RecordState {}
 
 instance
@@ -45,12 +71,15 @@ instance
   ) =>
   InitRecordRL (RL.Cons sym x rl') inits r rsta
   where
+  initRecordRL :: Proxy (RL.Cons sym x rl') -> Record inits -> Maybe (Record r) -> RecordState rsta
   initRecordRL _ inits optRec =
     overRecordState update tail
+
     where
     update :: Record rsta' -> Record rsta
     update = Record.insert prxSym head
 
+    overRecordState :: (Record rsta' -> Record rsta) -> RecordState rsta' -> RecordState rsta
     overRecordState f (RecordState rec) = RecordState $ f rec
 
     head :: sta
@@ -62,25 +91,8 @@ instance
     init :: Maybe a -> sta
     init = Record.get prxSym inits
 
-    prxSym = Proxy :: _ sym
-    prxRl' = Proxy :: _ rl'
+    prxSym :: Proxy sym
+    prxSym = Proxy
 
----
-
-testInitRecord
-  :: Record
-       ( field1 :: Maybe T1 -> S1
-       , field2 :: Maybe T2 -> S2
-       , field3 :: Maybe T3 -> S3
-       )
-  -> Maybe $ Record
-       ( field1 :: T1
-       , field2 :: T2
-       , field3 :: T3
-       )
-  -> RecordState
-       ( field1 :: S1
-       , field2 :: S2
-       , field3 :: S3
-       )
-testInitRecord = initRecord
+    prxRl' :: Proxy rl'
+    prxRl' = Proxy

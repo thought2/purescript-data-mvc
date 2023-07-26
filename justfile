@@ -40,3 +40,6 @@ suggest-list:
 
 suggest-apply:
     just ide 2>&1 | ps-suggest --apply
+
+gen-purs-docs:
+    FILE=.spago/package.json; echo '{}' > $FILE; spago docs; echo '{"type": "module"}' > $FILE

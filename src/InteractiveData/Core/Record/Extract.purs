@@ -1,20 +1,33 @@
-module InteractiveData.Core.Record.Extract where
+module InteractiveData.Core.Record.Extract
+  ( class ExtractRecord
+  , extractRecord
+  , class ExtractRecordRL
+  , extractRecordRL
+  ) where
 
 import Prelude
 
 import Data.Either (Either(..))
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import InteractiveData.Core.Types (DataPathSegment(..), DataPathSegmentField(..), Opt, scopeOpt)
-import InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)
 import Prim.RowList as RL
 import Record as Record
-import Type.Function (type ($))
 import Type.Proxy (Proxy(..))
 
-class ExtractRecord extracts rsta r | extracts -> rsta r where
+--------------------------------------------------------------------------------
+--- ExtractRecord
+--------------------------------------------------------------------------------
+
+class
+  ExtractRecord
+    (extracts :: Row Type)
+    (rsta :: Row Type)
+    (r :: Row Type)
+  | extracts -> rsta r
+  where
   extractRecord :: Record extracts -> RecordState rsta -> Opt (Record r)
 
 instance
@@ -26,12 +39,21 @@ instance
   extractRecord :: Record extracts -> RecordState rsta -> Opt (Record r)
   extractRecord = extractRecordRL prxRl
     where
-    prxRl = Proxy :: _ rl
+    prxRl :: Proxy rl
+    prxRl = Proxy
 
----
+--------------------------------------------------------------------------------
+--- ExtractRecordRL
+--------------------------------------------------------------------------------
 
-class ExtractRecordRL :: RowList Type -> Row Type -> Row Type -> Row Type -> Constraint
-class ExtractRecordRL rl extracts rsta r | rl extracts -> rsta r where
+class
+  ExtractRecordRL
+    (rl :: RowList Type)
+    (extracts :: Row Type)
+    (rsta :: Row Type)
+    (r :: Row Type)
+  | rl extracts -> rsta r
+  where
   extractRecordRL :: Proxy rl -> Record extracts -> RecordState rsta -> Opt (Record r)
 
 instance ExtractRecordRL RL.Nil extracts rsta ()
@@ -80,25 +102,9 @@ instance
     state :: sta
     state = Record.get prxSym states
 
-    prxRl' = Proxy :: _ rl'
-    prxSym = Proxy :: _ sym
+    prxRl' :: Proxy rl'
+    prxRl' = Proxy
 
----
+    prxSym :: Proxy sym
+    prxSym = Proxy
 
-t1
-  :: Record
-       ( field1 :: S1 -> Opt T1
-       , field2 :: S2 -> Opt T2
-       , field3 :: S3 -> Opt T3
-       )
-  -> RecordState
-       ( field1 :: S1
-       , field2 :: S2
-       , field3 :: S3
-       )
-  -> Opt $ Record
-       ( field1 :: T1
-       , field2 :: T2
-       , field3 :: T3
-       )
-t1 = extractRecord

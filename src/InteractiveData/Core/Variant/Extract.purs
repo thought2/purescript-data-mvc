@@ -1,13 +1,16 @@
-module InteractiveData.Core.Variant.Extract where
+module InteractiveData.Core.Variant.Extract
+  ( class ExtractVariant
+  , extractVariant
+  , class ExtractVariantRL
+  , extractVariantRL
+  ) where
 
 import Prelude
 
-import Data.Bifunctor (lmap)
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Variant (Variant)
 import Data.Variant as V
-import InteractiveData.Core.Types (DataPathSegment(..), Opt, scopeError, scopeOpt)
-import InteractiveData.TestTypes (S1, T1)
+import InteractiveData.Core.Types (DataPathSegment(..), Opt, scopeOpt)
 import MVC.Variant.Types (VariantState(..))
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)
@@ -15,25 +18,47 @@ import Prim.RowList as RL
 import Record as Record
 import Type.Proxy (Proxy(..))
 
-class ExtractVariant extracts rsta r | extracts -> rsta r where
+--------------------------------------------------------------------------------
+--- ExtractVariant
+--------------------------------------------------------------------------------
+
+class
+  ExtractVariant (extracts :: Row Type) (rsta :: Row Type) (r :: Row Type)
+  | extracts -> rsta r
+  where
   extractVariant :: Record extracts -> VariantState rsta -> Opt (Variant r)
 
 instance
   ( ExtractVariantRL rl extracts rsta r
   , RowToList extracts rl
   ) =>
-  ExtractVariant extracts rsta r where
-  extractVariant extracts (VariantState va) = extractVariantRL prxRl extracts va
+  ExtractVariant extracts rsta r
+  where
+  extractVariant :: Record extracts -> VariantState rsta -> Opt (Variant r)
+  extractVariant extracts (VariantState va) =
+    extractVariantRL prxRl extracts va
+
     where
-    prxRl = Proxy :: _ rl
+    prxRl :: Proxy rl
+    prxRl = Proxy
 
----
+--------------------------------------------------------------------------------
+--- ExtractVariantRL
+--------------------------------------------------------------------------------
 
-class ExtractVariantRL :: RowList Type -> Row Type -> Row Type -> Row Type -> Constraint
-class ExtractVariantRL rl extracts rsta r | rl extracts -> rsta r where
+class
+  ExtractVariantRL
+    (rl :: RowList Type)
+    (extracts :: Row Type)
+    (rsta :: Row Type)
+    (r :: Row Type)
+  | rl extracts -> rsta r
+  where
   extractVariantRL :: Proxy rl -> Record extracts -> Variant rsta -> Opt (Variant r)
 
-instance ExtractVariantRL RL.Nil extracts () r where
+instance ExtractVariantRL RL.Nil extracts () r
+  where
+  extractVariantRL :: Proxy RL.Nil -> Record extracts -> Variant () -> Opt (Variant r)
   extractVariantRL _ _ = V.case_
 
 instance
@@ -43,10 +68,13 @@ instance
   , Row.Cons sym a rx r
   , IsSymbol sym
   ) =>
-  ExtractVariantRL (RL.Cons sym x rl') extracts rsta r where
+  ExtractVariantRL (RL.Cons sym x rl') extracts rsta r
+  where
+  extractVariantRL :: Proxy (RL.Cons sym x rl') -> Record extracts -> Variant rsta -> Opt (Variant r)
   extractVariantRL _ extracts =
     tail
       # V.on prxSym head
+
     where
     head :: sta -> Opt (Variant r)
     head = extract >>> map (V.inj prxSym)
@@ -60,27 +88,8 @@ instance
     tail :: Variant rsta' -> Opt (Variant r)
     tail = extractVariantRL prxRl' extracts
 
-    prxRl' = Proxy :: _ rl'
-    prxSym = Proxy :: _ sym
+    prxRl' :: Proxy rl'
+    prxRl' = Proxy
 
----
-
-testExtractVariant
-  :: Record
-       ( field1 :: S1 -> Opt T1
-       , field2 :: S1 -> Opt T1
-       , field3 :: S1 -> Opt T1
-       )
-  -> VariantState
-       ( field1 :: S1
-       , field2 :: S1
-       , field3 :: S1
-       )
-  -> Opt
-       ( Variant
-           ( field1 :: T1
-           , field2 :: T1
-           , field3 :: T1
-           )
-       )
-testExtractVariant = extractVariant
+    prxSym :: Proxy sym
+    prxSym = Proxy

@@ -1,4 +1,4 @@
-module InteractiveData.TestTypes where
+module Test.InteractiveData.TestTypes where
 
 import Prelude
 
