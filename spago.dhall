@@ -2,7 +2,7 @@
 , dependencies =
   [ "arrays"
   , "bifunctors"
-  , "data-mvc"
+  , "mvc"
   , "either"
   , "heterogeneous"
   , "maybe"

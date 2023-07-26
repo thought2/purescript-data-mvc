@@ -13,9 +13,9 @@ with marked =
   }
 
 
-with data-mvc =
-  { repo = "https://github.com/thought2/purescript-data-mvc.git"
-  , version = "b7d9be8e404530c46f4f6ce7ba540f637220250f"
+with mvc =
+  { repo = "https://github.com/thought2/purescript-mvc.git"
+  , version = "5fceb6636b7747195789f6b656f72789b3f5e594"
   , dependencies = [ "heterogeneous", "maybe", "newtype", "prelude", "record", "variant" ]
   }
 
@@ -71,15 +71,15 @@ with variant-encodings =
 
 with dts =
   { repo = "https://github.com/thought2/purescript-dts.git"
-  , version = "973692ff220694d6f75df57025bb846362747cdf"
+  , version = "11e8d4288ac4520ee81d16ad07d2e1e553603e5c"
   , dependencies = [ "arrays", "console", "effect", "maybe", "newtype", "ordered-collections", "ordered-set", "prelude", "tuples" ]
   }
 
 
 with interactive-data-core =
   { repo = "https://github.com/thought2/purescript-interactive-data-core.git"
-  , version = "633cf691c64c23808a62b2749db1b4224b615796"
-  , dependencies = [ "arrays", "bifunctors", "data-mvc", "effect", "either", "heterogeneous", "identity", "maybe", "newtype", "prelude", "profunctor", "record", "typelevel-prelude", "variant" ]
+  , version = "00632cf35af47025f4328ef3c18a0de8268976b6"
+  , dependencies = [ "arrays", "bifunctors", "data-mvc", "either", "heterogeneous", "maybe", "newtype", "prelude", "profunctor", "record", "variant" ]
   }
 
 
@@ -92,7 +92,7 @@ with interactive-data-class =
 
 with interactive-data =
   { repo = "ssh://git@github.com/thought2/purescript-interactive-data.git"
-  , version = "9677e87b37819480863d69887b12c96e4632f1da"
+  , version = "299e1c43aa1b2373c7caf03882e0a48e7a6c333c"
   , dependencies = [ "arrays", "bifunctors", "convertable-options", "data-mvc", "dodo-printer", "either", "foldable-traversable", "heterogeneous", "identity", "integers", "interactive-data-core", "justifill", "labeled-data", "maybe", "newtype", "numbers", "ordered-collections", "partial", "prelude", "record", "routing-duplex", "spec", "strings", "these", "tuples", "typelevel-prelude", "unsafe-coerce", "variant", "virtual-dom", "virtual-dom-styled" ]
   }
 

@@ -6,5 +6,8 @@ in conf // {
     , "aff"
     , "spec"
     , "strings"
+    , "typelevel-prelude"
+    , "effect"
+    , "identity"
     ]
 }
