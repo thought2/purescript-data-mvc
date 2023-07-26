@@ -1,7 +1,7 @@
-module InteractiveData.Core.Types.IDError
-  ( IDError(..)
-  , IDErrorCase(..)
-  , Opt
+module InteractiveData.Core.Types.DataError
+  ( DataError(..)
+  , DataErrorCase(..)
+  , DataResult
   , scopeError
   , scopeErrors
   , scopeOpt
@@ -20,44 +20,44 @@ import InteractiveData.Core.Types.DataPath (DataPathSegment, DataPath)
 --- Types
 --------------------------------------------------------------------------------
 
-type Opt a = Either (NonEmptyArray IDError) a
+type DataResult a = Either (NonEmptyArray DataError) a
 
-data IDErrorCase
-  = IDErrNotYetDefined
-  | IDErrMsg String
+data DataErrorCase
+  = DataErrNotYetDefined
+  | DataErrMsg String
 
-data IDError = IDError DataPath IDErrorCase
+data DataError = DataError DataPath DataErrorCase
 
 --------------------------------------------------------------------------------
 --- Constructors & Combinators
 --------------------------------------------------------------------------------
 
-scopeError :: DataPathSegment -> IDError -> IDError
-scopeError seg (IDError path case_) = IDError ([ seg ] <> path) case_
+scopeError :: DataPathSegment -> DataError -> DataError
+scopeError seg (DataError path case_) = DataError ([ seg ] <> path) case_
 
-scopeErrors :: DataPathSegment -> NonEmptyArray IDError -> NonEmptyArray IDError
+scopeErrors :: DataPathSegment -> NonEmptyArray DataError -> NonEmptyArray DataError
 scopeErrors seg = map (scopeError seg)
 
-scopeOpt :: forall a. DataPathSegment -> Opt a -> Opt a
+scopeOpt :: forall a. DataPathSegment -> DataResult a -> DataResult a
 scopeOpt seg = lmap (scopeErrors seg)
 
 --------------------------------------------------------------------------------
 --- Instances
 --------------------------------------------------------------------------------
 
-derive instance Ord IDError
+derive instance Ord DataError
 
-derive instance Eq IDError
+derive instance Eq DataError
 
-derive instance Generic IDError _
+derive instance Generic DataError _
 
-derive instance Generic IDErrorCase _
+derive instance Generic DataErrorCase _
 
-instance Show IDError where
+instance Show DataError where
   show = genericShow
 
-instance Show IDErrorCase where
+instance Show DataErrorCase where
   show = genericShow
 
-derive instance Ord IDErrorCase
-derive instance Eq IDErrorCase
+derive instance Ord DataErrorCase
+derive instance Eq DataErrorCase

@@ -10,7 +10,7 @@ import Prelude
 import Data.Either (Either(..))
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import InteractiveData.Core.Types.DataPath (DataPathSegment(..), DataPathSegmentField(..))
-import InteractiveData.Core.Types.IDError (Opt, scopeOpt)
+import InteractiveData.Core.Types.DataError (DataResult, scopeOpt)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)
@@ -29,7 +29,7 @@ class
     (r :: Row Type)
   | extracts -> rsta r
   where
-  extractRecord :: Record extracts -> RecordState rsta -> Opt (Record r)
+  extractRecord :: Record extracts -> RecordState rsta -> DataResult (Record r)
 
 instance
   ( RowToList extracts rl
@@ -37,7 +37,7 @@ instance
   ) =>
   ExtractRecord extracts rsta r
   where
-  extractRecord :: Record extracts -> RecordState rsta -> Opt (Record r)
+  extractRecord :: Record extracts -> RecordState rsta -> DataResult (Record r)
   extractRecord = extractRecordRL prxRl
     where
     prxRl :: Proxy rl
@@ -55,16 +55,16 @@ class
     (r :: Row Type)
   | rl extracts -> rsta r
   where
-  extractRecordRL :: Proxy rl -> Record extracts -> RecordState rsta -> Opt (Record r)
+  extractRecordRL :: Proxy rl -> Record extracts -> RecordState rsta -> DataResult (Record r)
 
 instance ExtractRecordRL RL.Nil extracts rsta ()
   where
-  extractRecordRL :: Proxy RL.Nil -> Record extracts -> RecordState rsta -> Opt (Record ())
+  extractRecordRL :: Proxy RL.Nil -> Record extracts -> RecordState rsta -> DataResult (Record ())
   extractRecordRL _ _ _ = Right {}
 
 instance
   ( ExtractRecordRL rl' extracts rsta r'
-  , Row.Cons sym (sta -> Opt a) extractsx extracts
+  , Row.Cons sym (sta -> DataResult a) extractsx extracts
   , Row.Cons sym sta rstax rsta
   , Row.Cons sym a r' r
   , Row.Lacks sym r'
@@ -72,7 +72,7 @@ instance
   ) =>
   ExtractRecordRL (RL.Cons sym x rl') extracts rsta r
   where
-  extractRecordRL :: Proxy (RL.Cons sym x rl') -> Record extracts -> RecordState rsta -> Opt (Record r)
+  extractRecordRL :: Proxy (RL.Cons sym x rl') -> Record extracts -> RecordState rsta -> DataResult (Record r)
   extractRecordRL _ extracts (RecordState states) =
     case head, tail of
       Left errors1, Left errors2 ->
@@ -88,16 +88,16 @@ instance
         Right $ Record.insert prxSym x xs
 
     where
-    tail :: Opt (Record r')
+    tail :: DataResult (Record r')
     tail = extractRecordRL prxRl' extracts (RecordState states)
 
-    head :: Opt a
+    head :: DataResult a
     head = extract state # scopeOpt pathSeg
 
     pathSeg :: DataPathSegment
     pathSeg = SegField $ SegStaticKey (reflectSymbol prxSym)
 
-    extract :: sta -> Opt a
+    extract :: sta -> DataResult a
     extract = Record.get prxSym extracts
 
     state :: sta

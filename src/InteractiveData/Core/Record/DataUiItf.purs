@@ -16,7 +16,7 @@ import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
 import InteractiveData.Core.Record.Extract (class ExtractRecord, extractRecord)
 import InteractiveData.Core.Record.Init (class InitRecord, initRecord)
 import InteractiveData.Core.Types.DataUI (DataUiItf(..))
-import InteractiveData.Core.Types.IDError (Opt)
+import InteractiveData.Core.Types.DataError (DataResult)
 import MVC.Record (class UpdateRecord, class ViewRecord, RecordMsg, RecordState, updateRecord, viewRecord)
 import MVC.Record.UI (UIRecordProps)
 import Prim.Row as Row
@@ -67,7 +67,7 @@ instance
     view :: RecordState rsta -> srf (RecordMsg rmsg)
     view = viewRecord views { viewEntries: props.viewEntries }
 
-    extract :: RecordState rsta -> Opt (Record r)
+    extract :: RecordState rsta -> DataResult (Record r)
     extract = extractRecord extracts
 
     name :: String

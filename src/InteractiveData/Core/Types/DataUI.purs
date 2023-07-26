@@ -3,7 +3,7 @@ module InteractiveData.Core.Types.DataUI
   , DataUICtx(..)
   , DataUICtxImpl
   , DataUiItf(..)
-  , RefineOpts
+  , RefineDataResults
   , applyDataUi
   , applyWrap
   , dataUiItfToUI
@@ -19,7 +19,7 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 import Data.Newtype as NT
 import Data.Profunctor (lcmap)
-import InteractiveData.Core.Types.IDError (Opt)
+import InteractiveData.Core.Types.DataError (DataResult)
 import MVC.Types as MVC
 
 newtype DataUI srf fm fs msg sta a =
@@ -31,7 +31,7 @@ newtype DataUiItf srf msg sta a =
     { init :: Maybe a -> sta
     , update :: msg -> sta -> sta
     , view :: sta -> srf msg
-    , extract :: sta -> Opt a
+    , extract :: sta -> DataResult a
     , name :: String
     }
 
@@ -45,7 +45,7 @@ type DataUICtxImpl html fm fs =
       -> DataUiItf html (fm msg) (fs sta) a
   }
 
-type Extract sta a = sta -> Opt a
+type Extract sta a = sta -> DataResult a
 
 type Update msg sta = msg -> sta -> sta
 
@@ -101,13 +101,13 @@ applyDataUi r ui1 = DataUI \ctx -> DataUiItf
       r.init (NT.unwrap $ runDataUi ui1 ctx).init
   }
 
-type RefineOpts a b =
+type RefineDataResults a b =
   { typeName :: String
-  , refine :: a -> Opt b
+  , refine :: a -> DataResult b
   , unrefine :: b -> a
   }
 
-refineDataUi :: forall srf fm fs msg sta a b. RefineOpts a b -> DataUI srf fm fs msg sta a -> DataUI srf fm fs msg sta b
+refineDataUi :: forall srf fm fs msg sta a b. RefineDataResults a b -> DataUI srf fm fs msg sta a -> DataUI srf fm fs msg sta b
 refineDataUi { typeName, refine, unrefine } (DataUI mkDataUi) = DataUI \ctx ->
   let
     DataUiItf dataUi = mkDataUi ctx

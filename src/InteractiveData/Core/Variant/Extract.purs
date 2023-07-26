@@ -11,7 +11,7 @@ import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Variant (Variant)
 import Data.Variant as V
 import InteractiveData.Core.Types.DataPath (DataPathSegment(..))
-import InteractiveData.Core.Types.IDError (Opt, scopeOpt)
+import InteractiveData.Core.Types.DataError (DataResult, scopeOpt)
 import MVC.Variant.Types (VariantState(..))
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)
@@ -27,7 +27,7 @@ class
   ExtractVariant (extracts :: Row Type) (rsta :: Row Type) (r :: Row Type)
   | extracts -> rsta r
   where
-  extractVariant :: Record extracts -> VariantState rsta -> Opt (Variant r)
+  extractVariant :: Record extracts -> VariantState rsta -> DataResult (Variant r)
 
 instance
   ( ExtractVariantRL rl extracts rsta r
@@ -35,7 +35,7 @@ instance
   ) =>
   ExtractVariant extracts rsta r
   where
-  extractVariant :: Record extracts -> VariantState rsta -> Opt (Variant r)
+  extractVariant :: Record extracts -> VariantState rsta -> DataResult (Variant r)
   extractVariant extracts (VariantState va) =
     extractVariantRL prxRl extracts va
 
@@ -55,38 +55,38 @@ class
     (r :: Row Type)
   | rl extracts -> rsta r
   where
-  extractVariantRL :: Proxy rl -> Record extracts -> Variant rsta -> Opt (Variant r)
+  extractVariantRL :: Proxy rl -> Record extracts -> Variant rsta -> DataResult (Variant r)
 
 instance ExtractVariantRL RL.Nil extracts () r
   where
-  extractVariantRL :: Proxy RL.Nil -> Record extracts -> Variant () -> Opt (Variant r)
+  extractVariantRL :: Proxy RL.Nil -> Record extracts -> Variant () -> DataResult (Variant r)
   extractVariantRL _ _ = V.case_
 
 instance
   ( ExtractVariantRL rl' extracts rsta' r
-  , Row.Cons sym (sta -> Opt a) extractsx extracts
+  , Row.Cons sym (sta -> DataResult a) extractsx extracts
   , Row.Cons sym sta rsta' rsta
   , Row.Cons sym a rx r
   , IsSymbol sym
   ) =>
   ExtractVariantRL (RL.Cons sym x rl') extracts rsta r
   where
-  extractVariantRL :: Proxy (RL.Cons sym x rl') -> Record extracts -> Variant rsta -> Opt (Variant r)
+  extractVariantRL :: Proxy (RL.Cons sym x rl') -> Record extracts -> Variant rsta -> DataResult (Variant r)
   extractVariantRL _ extracts =
     tail
       # V.on prxSym head
 
     where
-    head :: sta -> Opt (Variant r)
+    head :: sta -> DataResult (Variant r)
     head = extract >>> map (V.inj prxSym)
 
     pathSeg :: DataPathSegment
     pathSeg = SegCase (reflectSymbol prxSym)
 
-    extract :: sta -> Opt a
+    extract :: sta -> DataResult a
     extract = Record.get prxSym extracts >>> scopeOpt pathSeg
 
-    tail :: Variant rsta' -> Opt (Variant r)
+    tail :: Variant rsta' -> DataResult (Variant r)
     tail = extractVariantRL prxRl' extracts
 
     prxRl' :: Proxy rl'

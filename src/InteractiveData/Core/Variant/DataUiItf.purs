@@ -19,7 +19,7 @@ import Data.Symbol (class IsSymbol)
 import Data.Variant (Variant)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
 import InteractiveData.Core.Types.DataUI (DataUiItf(..))
-import InteractiveData.Core.Types.IDError (Opt)
+import InteractiveData.Core.Types.DataError (DataResult)
 import InteractiveData.Core.Variant.Extract (class ExtractVariant, extractVariant)
 import InteractiveData.Core.Variant.Init (class InitVariant, initVariant)
 import MVC.Variant.Types (VariantMsg, VariantState)
@@ -91,7 +91,7 @@ instance
     view :: VariantState rsta -> srf (VariantMsg rcase rmsg)
     view = viewVariant { view: props.view } views
 
-    extract :: VariantState rsta -> Opt (Variant r)
+    extract :: VariantState rsta -> DataResult (Variant r)
     extract = extractVariant extracts
 
     name :: String
