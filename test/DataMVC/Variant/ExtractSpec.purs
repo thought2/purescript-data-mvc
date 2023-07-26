@@ -1,14 +1,14 @@
-module Test.InteractiveData.Core.Variant.ExtractSpec
+module Test.DataMVC.Variant.ExtractSpec
   ( spec
   ) where
 
 import Prelude
 
 import Data.Variant (Variant)
-import InteractiveData.Core.Types (DataResult)
-import InteractiveData.Core.Variant.Extract as ME
+import DataMVC.Types (DataResult)
+import DataMVC.Variant.Extract as ME
 import MVC.Variant (VariantState)
-import Test.InteractiveData.TestTypes (S1, T1)
+import Test.DataMVC.TestTypes (S1, T1)
 import Test.Spec (Spec, describe, it)
 
 testExtractVariant
@@ -33,6 +33,6 @@ testExtractVariant = ME.extractVariant
 
 spec :: Spec Unit
 spec = do
-  describe "InteractiveData.Core.Variant.Extract" do
+  describe "DataMVC.Variant.Extract" do
     it "should compile" do
       void $ pure testExtractVariant

@@ -1,15 +1,15 @@
-module Test.InteractiveData.Core.Variant.DataUiItfSpec
+module Test.DataMVC.Variant.DataUiItfSpec
   ( spec
   ) where
 
 import Prelude
 
 import Data.Variant (Variant)
-import InteractiveData.Core.Types (DataUiItf)
-import InteractiveData.Core.Variant.DataUiItf as ME
-import Test.InteractiveData.TestTypes (HTML)
+import DataMVC.Types (DataUiItf)
+import DataMVC.Variant.DataUiItf as ME
+import Test.DataMVC.TestTypes (HTML)
 import MVC.Variant (CaseKey, VariantMsg, VariantState)
-import Test.InteractiveData.TestTypes (M1, M2, M3, S1, S2, S3, T1, T2, T3)
+import Test.DataMVC.TestTypes (M1, M2, M3, S1, S2, S3, T1, T2, T3)
 import Test.Spec (Spec, describe, it)
 import Type.Proxy (Proxy)
 
@@ -56,6 +56,6 @@ testDataUiItfVariant = ME.dataUiItfVariant
 
 spec :: Spec Unit
 spec = do
-  describe "InteractiveData.Core.Variant.DataUiItf" do
+  describe "DataMVC.Variant.DataUiItf" do
     it "should compile" do
       void $ pure testDataUiItfVariant

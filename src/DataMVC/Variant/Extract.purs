@@ -1,4 +1,4 @@
-module InteractiveData.Core.Variant.Extract
+module DataMVC.Variant.Extract
   ( class ExtractVariant
   , extractVariant
   , class ExtractVariantRL
@@ -10,8 +10,8 @@ import Prelude
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Variant (Variant)
 import Data.Variant as V
-import InteractiveData.Core.Types.DataPath (DataPathSegment(..))
-import InteractiveData.Core.Types.DataError (DataResult, scopeOpt)
+import DataMVC.Types.DataPath (DataPathSegment(..))
+import DataMVC.Types.DataError (DataResult, scopeOpt)
 import MVC.Variant.Types (VariantState(..))
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)

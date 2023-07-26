@@ -1,4 +1,4 @@
-module InteractiveData.Core.Variant.DataUiItf
+module DataMVC.Variant.DataUiItf
   ( DataUiItfVariantProps
   , FnConvertInit(..)
   , FnRecordGet
@@ -18,10 +18,10 @@ import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
 import Data.Variant (Variant)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Types.DataUI (DataUiItf(..))
-import InteractiveData.Core.Types.DataError (DataResult)
-import InteractiveData.Core.Variant.Extract (class ExtractVariant, extractVariant)
-import InteractiveData.Core.Variant.Init (class InitVariant, initVariant)
+import DataMVC.Types.DataUI (DataUiItf(..))
+import DataMVC.Types.DataError (DataResult)
+import DataMVC.Variant.Extract (class ExtractVariant, extractVariant)
+import DataMVC.Variant.Init (class InitVariant, initVariant)
 import MVC.Variant.Types (VariantMsg, VariantState)
 import MVC.Variant.Update (class UpdateVariant, updateVariant)
 import MVC.Variant.View (class ViewVariant, ViewArgs, viewVariant)

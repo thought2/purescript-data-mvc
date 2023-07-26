@@ -1,4 +1,4 @@
-module Test.InteractiveData.Core.Variant.DataUISpec
+module Test.DataMVC.Variant.DataUISpec
   ( spec
   ) where
 
@@ -6,10 +6,10 @@ import Prelude
 
 import Data.Identity (Identity)
 import Data.Variant (Variant)
-import InteractiveData.Core.Types (DataUI, DataUiItf)
-import InteractiveData.Core.Variant.DataUI as ME
+import DataMVC.Types (DataUI, DataUiItf)
+import DataMVC.Variant.DataUI as ME
 import MVC.Variant (CaseKey, VariantMsg, VariantState)
-import Test.InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
+import Test.DataMVC.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
 import Test.Spec (Spec, describe, it)
 import Type.Proxy (Proxy)
 
@@ -56,6 +56,6 @@ testDataUiVariant = ME.dataUiVariant
 
 spec :: Spec Unit
 spec = do
-  describe "InteractiveData.Core.Variant.DataUI" do
+  describe "DataMVC.Variant.DataUI" do
     it "should compile" do
       void $ pure testDataUiVariant

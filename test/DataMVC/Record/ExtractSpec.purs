@@ -1,13 +1,13 @@
-module Test.InteractiveData.Core.Record.ExtractSpec
+module Test.DataMVC.Record.ExtractSpec
   ( spec
   ) where
 
 import Prelude
 
-import InteractiveData.Core.Record.Extract as ME
-import InteractiveData.Core.Types (DataResult)
+import DataMVC.Record.Extract as ME
+import DataMVC.Types (DataResult)
 import MVC.Record (RecordState)
-import Test.InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
+import Test.DataMVC.TestTypes (S1, S2, S3, T1, T2, T3)
 import Test.Spec (Spec, describe, it)
 import Type.Function (type ($))
 
@@ -31,6 +31,6 @@ testExtractRecord = ME.extractRecord
 
 spec :: Spec Unit
 spec = do
-  describe "InteractiveData.Core.Record.Extract" do
+  describe "DataMVC.Record.Extract" do
     it "should compile" do
       void $ pure testExtractRecord

@@ -1,4 +1,4 @@
-module InteractiveData.Core.Types.DataUI
+module DataMVC.Types.DataUI
   ( DataUI(..)
   , DataUICtx(..)
   , DataUICtxImpl
@@ -19,7 +19,7 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 import Data.Newtype as NT
 import Data.Profunctor (lcmap)
-import InteractiveData.Core.Types.DataError (DataResult)
+import DataMVC.Types.DataError (DataResult)
 import MVC.Types as MVC
 
 newtype DataUI srf fm fs msg sta a =

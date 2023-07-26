@@ -1,4 +1,4 @@
-module InteractiveData.Core.Record.Init
+module DataMVC.Record.Init
   ( class InitRecord
   , initRecord
   , class InitRecordRL

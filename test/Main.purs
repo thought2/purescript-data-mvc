@@ -12,6 +12,6 @@ import Test.Spec.Runner (runSpec)
 main :: Effect Unit
 main = launchAff_ do
   specs <- discover $ Str.joinWith "|"
-    [ """(Test\.Lib.*Spec)"""
+    [ """(Test\.DataMVC.*Spec)"""
     ]
   runSpec [ consoleReporter ] specs

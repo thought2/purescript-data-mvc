@@ -1,4 +1,4 @@
-module InteractiveData.Core.Variant.Init
+module DataMVC.Variant.Init
   ( class InitVariant
   , initVariant
   , class InitVariantRL

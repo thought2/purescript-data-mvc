@@ -1,4 +1,4 @@
-{ name = "interactive-data-core"
+{ name = "data-mvc"
 , dependencies =
   [ "arrays"
   , "bifunctors"

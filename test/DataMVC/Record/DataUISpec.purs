@@ -1,14 +1,14 @@
-module Test.InteractiveData.Core.Record.DataUISpec
+module Test.DataMVC.Record.DataUISpec
   ( spec
   ) where
 
 import Prelude
 
 import Data.Identity (Identity)
-import InteractiveData.Core.Types (DataUI)
-import InteractiveData.Core.Record.DataUI as ME
+import DataMVC.Types (DataUI)
+import DataMVC.Record.DataUI as ME
 import MVC.Record (RecordMsg, RecordState)
-import Test.InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
+import Test.DataMVC.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
 import Test.Spec (Spec, describe, it)
 
 testDataUiRecord
@@ -94,7 +94,7 @@ testDataUiRecord2 = ME.dataUiRecord
 
 spec :: Spec Unit
 spec = do
-  describe "InteractiveData.Core.Record.DataUI" do
+  describe "DataMVC.Record.DataUI" do
     it "should compile" do
       void $ pure testDataUiRecord
     it "should compile" do

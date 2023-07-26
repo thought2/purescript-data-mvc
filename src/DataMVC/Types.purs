@@ -1,18 +1,18 @@
-module InteractiveData.Core.Types (module Export) where
+module DataMVC.Types (module Export) where
 
-import InteractiveData.Core.Types.DataUI
+import DataMVC.Types.DataUI
   ( DataUI(..)
   , DataUICtx(..)
   , DataUiItf(..)
   ) as Export
 
-import InteractiveData.Core.Types.DataError
+import DataMVC.Types.DataError
   ( DataError
   , DataErrorCase(..)
   , DataResult
   ) as Export
 
-import InteractiveData.Core.Types.DataPath
+import DataMVC.Types.DataPath
   ( DataPath
   , DataPathSegment(..)
   , DataPathSegmentField(..)

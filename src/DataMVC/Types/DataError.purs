@@ -1,4 +1,4 @@
-module InteractiveData.Core.Types.DataError
+module DataMVC.Types.DataError
   ( DataError(..)
   , DataErrorCase(..)
   , DataResult
@@ -14,7 +14,7 @@ import Data.Bifunctor (lmap)
 import Data.Either (Either)
 import Data.Generic.Rep (class Generic)
 import Data.Show.Generic (genericShow)
-import InteractiveData.Core.Types.DataPath (DataPathSegment, DataPath)
+import DataMVC.Types.DataPath (DataPathSegment, DataPath)
 
 --------------------------------------------------------------------------------
 --- Types

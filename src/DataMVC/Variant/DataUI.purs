@@ -1,12 +1,12 @@
-module InteractiveData.Core.Variant.DataUI
+module DataMVC.Variant.DataUI
   ( class DataUiVariant
   , dataUiVariant
   ) where
 
 import Data.Variant (Variant)
-import InteractiveData.Core.ApplyCtx (class ApplyCtx, mapApplyCtx)
-import InteractiveData.Core.Types.DataUI (DataUI(..), DataUICtx)
-import InteractiveData.Core.Variant.DataUiItf (class DataUiItfVariant, DataUiItfVariantProps, dataUiItfVariant)
+import DataMVC.ApplyCtx (class ApplyCtx, mapApplyCtx)
+import DataMVC.Types.DataUI (DataUI(..), DataUICtx)
+import DataMVC.Variant.DataUiItf (class DataUiItfVariant, DataUiItfVariantProps, dataUiItfVariant)
 import MVC.Variant.Types (VariantMsg, VariantState)
 import Type.Proxy (Proxy)
 

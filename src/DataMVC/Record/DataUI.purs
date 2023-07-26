@@ -1,11 +1,11 @@
-module InteractiveData.Core.Record.DataUI
+module DataMVC.Record.DataUI
   ( class DataUiRecord
   , dataUiRecord
   ) where
 
-import InteractiveData.Core.ApplyCtx (class ApplyCtx, mapApplyCtx)
-import InteractiveData.Core.Record.DataUiItf (class DataUiItfRecord, dataUiItfRecord)
-import InteractiveData.Core.Types.DataUI (DataUI(..), DataUICtx)
+import DataMVC.ApplyCtx (class ApplyCtx, mapApplyCtx)
+import DataMVC.Record.DataUiItf (class DataUiItfRecord, dataUiItfRecord)
+import DataMVC.Types.DataUI (DataUI(..), DataUICtx)
 import MVC.Record (RecordMsg, RecordState)
 import MVC.Record.UI (UIRecordProps)
 

@@ -1,4 +1,4 @@
-module InteractiveData.Core.ApplyCtx
+module DataMVC.ApplyCtx
   ( class ApplyCtx
   , mapApplyCtx
   , class ApplyCtxRL
@@ -6,7 +6,7 @@ module InteractiveData.Core.ApplyCtx
   ) where
 
 import Data.Symbol (class IsSymbol)
-import InteractiveData.Core.Types.DataUI (DataUI, DataUICtx, DataUiItf, applyWrap, runDataUi)
+import DataMVC.Types.DataUI (DataUI, DataUICtx, DataUiItf, applyWrap, runDataUi)
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)
 import Prim.RowList as RL

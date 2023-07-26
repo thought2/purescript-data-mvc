@@ -1,13 +1,13 @@
-module Test.InteractiveData.Core.Record.DataUiItfSpec
+module Test.DataMVC.Record.DataUiItfSpec
   ( spec
   ) where
 
 import Prelude
 
-import InteractiveData.Core.Record.DataUiItf as ME
-import InteractiveData.Core.Types (DataUiItf)
+import DataMVC.Record.DataUiItf as ME
+import DataMVC.Types (DataUiItf)
 import MVC.Record (RecordMsg, RecordState)
-import Test.InteractiveData.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
+import Test.DataMVC.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
 import Test.Spec (Spec, describe, it)
 
 testDataUiItfRecord
@@ -59,6 +59,6 @@ testDataUiItfRecord = ME.dataUiItfRecord
 
 spec :: Spec Unit
 spec = do
-  describe "InteractiveData.Core.Record.DataUiItf" do
+  describe "DataMVC.Record.DataUiItf" do
     it "should compile" do
       void $ pure testDataUiItfRecord

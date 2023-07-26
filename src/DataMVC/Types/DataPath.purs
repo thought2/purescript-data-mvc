@@ -1,4 +1,4 @@
-module InteractiveData.Core.Types.DataPath
+module DataMVC.Types.DataPath
   ( DataPath
   , DataPathSegment(..)
   , DataPathSegmentField(..)

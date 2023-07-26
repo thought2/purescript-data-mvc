@@ -1,4 +1,4 @@
-module InteractiveData.Core.Record.DataUiItf
+module DataMVC.Record.DataUiItf
   ( FnRecordGet
   , class DataUiItfRecord
   , dataUiItfRecord
@@ -13,10 +13,10 @@ import Data.Newtype (class Newtype)
 import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import InteractiveData.Core.Record.Extract (class ExtractRecord, extractRecord)
-import InteractiveData.Core.Record.Init (class InitRecord, initRecord)
-import InteractiveData.Core.Types.DataUI (DataUiItf(..))
-import InteractiveData.Core.Types.DataError (DataResult)
+import DataMVC.Record.Extract (class ExtractRecord, extractRecord)
+import DataMVC.Record.Init (class InitRecord, initRecord)
+import DataMVC.Types.DataUI (DataUiItf(..))
+import DataMVC.Types.DataError (DataResult)
 import MVC.Record (class UpdateRecord, class ViewRecord, RecordMsg, RecordState, updateRecord, viewRecord)
 import MVC.Record.UI (UIRecordProps)
 import Prim.Row as Row

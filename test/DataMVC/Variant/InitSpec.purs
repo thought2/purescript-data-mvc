@@ -1,4 +1,4 @@
-module Test.InteractiveData.Core.Variant.InitSpec
+module Test.DataMVC.Variant.InitSpec
   ( spec
   ) where
 
@@ -6,9 +6,9 @@ import Prelude
 
 import Data.Maybe (Maybe)
 import Data.Variant (Variant)
-import InteractiveData.Core.Variant.Init as ME
+import DataMVC.Variant.Init as ME
 import MVC.Variant (VariantState)
-import Test.InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
+import Test.DataMVC.TestTypes (S1, S2, S3, T1, T2, T3)
 import Test.Spec (Spec, describe, it)
 import Type.Proxy (Proxy)
 
@@ -35,6 +35,6 @@ testInitVariant = ME.initVariant
 
 spec :: Spec Unit
 spec = do
-  describe "InteractiveData.Core.Variant.Init" do
+  describe "DataMVC.Variant.Init" do
     it "should compile" do
       void $ pure testInitVariant

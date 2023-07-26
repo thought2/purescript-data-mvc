@@ -1,4 +1,4 @@
-module InteractiveData.Core.Record.Extract
+module DataMVC.Record.Extract
   ( class ExtractRecord
   , extractRecord
   , class ExtractRecordRL
@@ -9,8 +9,8 @@ import Prelude
 
 import Data.Either (Either(..))
 import Data.Symbol (class IsSymbol, reflectSymbol)
-import InteractiveData.Core.Types.DataPath (DataPathSegment(..), DataPathSegmentField(..))
-import InteractiveData.Core.Types.DataError (DataResult, scopeOpt)
+import DataMVC.Types.DataPath (DataPathSegment(..), DataPathSegmentField(..))
+import DataMVC.Types.DataError (DataResult, scopeOpt)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)

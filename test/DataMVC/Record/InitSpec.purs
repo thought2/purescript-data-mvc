@@ -1,13 +1,13 @@
-module Test.InteractiveData.Core.Record.InitSpec
+module Test.DataMVC.Record.InitSpec
   ( spec
   ) where
 
 import Prelude
 
 import Data.Maybe (Maybe)
-import InteractiveData.Core.Record.Init as ME
+import DataMVC.Record.Init as ME
 import MVC.Record (RecordState)
-import Test.InteractiveData.TestTypes (S1, S2, S3, T1, T2, T3)
+import Test.DataMVC.TestTypes (S1, S2, S3, T1, T2, T3)
 import Test.Spec (Spec, describe, it)
 import Type.Function (type ($))
 
@@ -31,6 +31,6 @@ testInitRecord = ME.initRecord
 
 spec :: Spec Unit
 spec = do
-  describe "InteractiveData.Core.Record.Init" do
+  describe "DataMVC.Record.Init" do
     it "should compile" do
       void $ pure testInitRecord
