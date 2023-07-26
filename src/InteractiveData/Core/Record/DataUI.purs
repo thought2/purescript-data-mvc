@@ -5,7 +5,7 @@ module InteractiveData.Core.Record.DataUI
 
 import InteractiveData.Core.ApplyCtx (class ApplyCtx, mapApplyCtx)
 import InteractiveData.Core.Record.DataUiItf (class DataUiItfRecord, dataUiItfRecord)
-import InteractiveData.Core.Types (DataUI(..), DataUICtx)
+import InteractiveData.Core.Types.DataUI (DataUI(..), DataUICtx)
 import MVC.Record (RecordMsg, RecordState)
 import MVC.Record.UI (UIRecordProps)
 

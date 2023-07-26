@@ -9,7 +9,8 @@ import Prelude
 
 import Data.Either (Either(..))
 import Data.Symbol (class IsSymbol, reflectSymbol)
-import InteractiveData.Core.Types (DataPathSegment(..), DataPathSegmentField(..), Opt, scopeOpt)
+import InteractiveData.Core.Types.DataPath (DataPathSegment(..), DataPathSegmentField(..))
+import InteractiveData.Core.Types.IDError (Opt, scopeOpt)
 import MVC.Record (RecordState(..))
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)

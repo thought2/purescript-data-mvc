@@ -10,7 +10,8 @@ import Prelude
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Variant (Variant)
 import Data.Variant as V
-import InteractiveData.Core.Types (DataPathSegment(..), Opt, scopeOpt)
+import InteractiveData.Core.Types.DataPath (DataPathSegment(..))
+import InteractiveData.Core.Types.IDError (Opt, scopeOpt)
 import MVC.Variant.Types (VariantState(..))
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)
