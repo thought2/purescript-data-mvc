@@ -6,7 +6,7 @@ import Prelude
 
 import Data.Identity (Identity)
 import Data.Variant (Variant)
-import DataMVC.Types (DataUI, DataUiItf)
+import DataMVC.Types (DataUI, DataUiInterface)
 import DataMVC.Variant.DataUI as ME
 import MVC.Variant (CaseKey, VariantMsg, VariantState)
 import Test.DataMVC.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)

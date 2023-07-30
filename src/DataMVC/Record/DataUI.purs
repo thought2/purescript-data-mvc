@@ -4,7 +4,7 @@ module DataMVC.Record.DataUI
   ) where
 
 import DataMVC.ApplyCtx (class ApplyCtx, mapApplyCtx)
-import DataMVC.Record.DataUiItf (class DataUiItfRecord, dataUiItfRecord)
+import DataMVC.Record.DataUiInterface (class DataUiInterfaceRecord, dataUiInterfaceRecord)
 import DataMVC.Types.DataUI (DataUI(..), DataUICtx)
 import MVC.Record (RecordMsg, RecordState)
 import MVC.Record.UI (UIRecordProps)
@@ -27,7 +27,7 @@ class
 
 instance
   ( ApplyCtx (DataUICtx srf fm fs) datauis uis
-  , DataUiItfRecord uis srf rmsg rsta r
+  , DataUiInterfaceRecord uis srf rmsg rsta r
   ) =>
   DataUiRecord datauis fm fs srf rmsg rsta r
   where
@@ -40,5 +40,5 @@ instance
       uis :: Record uis
       uis = mapApplyCtx ctx datauis
     in
-      dataUiItfRecord props uis
+      dataUiInterfaceRecord props uis
 

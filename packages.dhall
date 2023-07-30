@@ -8,7 +8,7 @@ in upstream
 
 with mvc =
   { repo = "https://github.com/thought2/purescript-mvc.git"
-  , version = "5fceb6636b7747195789f6b656f72789b3f5e594"
-  , dependencies = [ "heterogeneous", "maybe", "newtype", "prelude", "record", "variant" ]
+  , version = "884cf062846de0cc11a505816d73ba63204cedcc"
+  , dependencies = [ "heterogeneous", "maybe", "newtype", "prelude", "record", "variant" ] : List Text
   }
 

@@ -6,7 +6,7 @@ module DataMVC.Variant.DataUI
 import Data.Variant (Variant)
 import DataMVC.ApplyCtx (class ApplyCtx, mapApplyCtx)
 import DataMVC.Types.DataUI (DataUI(..), DataUICtx)
-import DataMVC.Variant.DataUiItf (class DataUiItfVariant, DataUiItfVariantProps, dataUiItfVariant)
+import DataMVC.Variant.DataUiInterface (class DataUiInterfaceVariant, DataUiInterfaceVariantProps, dataUiInterfaceVariant)
 import MVC.Variant.Types (VariantMsg, VariantState)
 import Type.Proxy (Proxy)
 
@@ -26,19 +26,19 @@ class
   dataUiVariant
     :: Record datauis
     -> Proxy initsym
-    -> DataUiItfVariantProps srf initsym
+    -> DataUiInterfaceVariantProps srf initsym
     -> DataUI srf fm fs (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
 
 instance
   ( ApplyCtx (DataUICtx srf fm fs) datauis uis
-  , DataUiItfVariant uis srf initsym rcase rmsg rsta r
+  , DataUiInterfaceVariant uis srf initsym rcase rmsg rsta r
   ) =>
   DataUiVariant datauis fm fs srf initsym rcase rmsg rsta r
   where
   dataUiVariant
     :: Record datauis
     -> Proxy initsym
-    -> DataUiItfVariantProps srf initsym
+    -> DataUiInterfaceVariantProps srf initsym
     -> DataUI srf fm fs (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
   dataUiVariant datauis prxInitSym props =
     DataUI \ctx ->
@@ -46,4 +46,4 @@ instance
         uis :: Record uis
         uis = mapApplyCtx ctx datauis
       in
-        dataUiItfVariant uis prxInitSym props
+        dataUiInterfaceVariant uis prxInitSym props

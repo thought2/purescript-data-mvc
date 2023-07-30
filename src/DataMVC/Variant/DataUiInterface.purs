@@ -1,11 +1,11 @@
-module DataMVC.Variant.DataUiItf
-  ( DataUiItfVariantProps
+module DataMVC.Variant.DataUiInterface
+  ( DataUiInterfaceVariantProps
   , FnConvertInit(..)
   , FnRecordGet
-  , class DataUiItfVariant
+  , class DataUiInterfaceVariant
   , class MapInits
   , class MapProp
-  , dataUiItfVariant
+  , dataUiInterfaceVariant
   , mapInits
   , mapProp
   ) where
@@ -18,7 +18,7 @@ import Data.Newtype as NT
 import Data.Symbol (class IsSymbol)
 import Data.Variant (Variant)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
-import DataMVC.Types.DataUI (DataUiItf(..))
+import DataMVC.Types.DataUI (DataUiInterface(..))
 import DataMVC.Types.DataError (DataResult)
 import DataMVC.Variant.Extract (class ExtractVariant, extractVariant)
 import DataMVC.Variant.Init (class InitVariant, initVariant)
@@ -29,17 +29,17 @@ import Prim.Row as Row
 import Record as Record
 import Type.Proxy (Proxy(..))
 
-type DataUiItfVariantProps :: (Type -> Type) -> Symbol -> Type
-type DataUiItfVariantProps srf initsym =
+type DataUiInterfaceVariantProps :: (Type -> Type) -> Symbol -> Type
+type DataUiInterfaceVariantProps srf initsym =
   { view :: forall msg. ViewArgs srf msg -> srf msg
   }
 
 -------------------------------------------------------------------------------
---- DataUiItfVariant
+--- DataUiInterfaceVariant
 -------------------------------------------------------------------------------
 
 class
-  DataUiItfVariant
+  DataUiInterfaceVariant
     (uis :: Row Type)
     (srf :: Type -> Type)
     (initsym :: Symbol)
@@ -49,11 +49,11 @@ class
     (r :: Row Type)
   | uis srf initsym rcase -> rmsg rsta r
   where
-  dataUiItfVariant
+  dataUiInterfaceVariant
     :: Record uis
     -> Proxy initsym
-    -> DataUiItfVariantProps srf initsym
-    -> DataUiItf srf (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
+    -> DataUiInterfaceVariantProps srf initsym
+    -> DataUiInterface srf (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
 
 instance
   ( MapProp "extract" uis extracts
@@ -68,15 +68,15 @@ instance
 
   , MapInits inits inits'
   ) =>
-  DataUiItfVariant uis srf initsym rcase rmsg rsta r
+  DataUiInterfaceVariant uis srf initsym rcase rmsg rsta r
   where
-  dataUiItfVariant
+  dataUiInterfaceVariant
     :: Record uis
     -> Proxy initsym
-    -> DataUiItfVariantProps srf initsym
-    -> DataUiItf srf (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
-  dataUiItfVariant uis prxInitSym props =
-    DataUiItf
+    -> DataUiInterfaceVariantProps srf initsym
+    -> DataUiInterface srf (VariantMsg rcase rmsg) (VariantState rsta) (Variant r)
+  dataUiInterfaceVariant uis prxInitSym props =
+    DataUiInterface
       { init, update, view, extract, name }
 
     where

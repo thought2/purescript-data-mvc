@@ -3,7 +3,7 @@ module DataMVC.Types (module Export) where
 import DataMVC.Types.DataUI
   ( DataUI(..)
   , DataUICtx(..)
-  , DataUiItf(..)
+  , DataUiInterface(..)
   ) as Export
 
 import DataMVC.Types.DataError

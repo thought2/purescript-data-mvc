@@ -2,11 +2,11 @@ module DataMVC.Types.DataUI
   ( DataUI(..)
   , DataUICtx(..)
   , DataUICtxImpl
-  , DataUiItf(..)
+  , DataUiInterface(..)
   , RefineDataResults
   , applyDataUi
   , applyWrap
-  , dataUiItfToUI
+  , dataUiInterfaceToUI
   , refineDataUi
   , runDataUi
   , runDataUiFinal
@@ -24,10 +24,10 @@ import MVC.Types as MVC
 
 newtype DataUI srf fm fs msg sta a =
   DataUI
-    (DataUICtx srf fm fs -> DataUiItf srf msg sta a)
+    (DataUICtx srf fm fs -> DataUiInterface srf msg sta a)
 
-newtype DataUiItf srf msg sta a =
-  DataUiItf
+newtype DataUiInterface srf msg sta a =
+  DataUiInterface
     { init :: Maybe a -> sta
     , update :: msg -> sta -> sta
     , view :: sta -> srf msg
@@ -41,8 +41,8 @@ newtype DataUICtx html fm fs =
 type DataUICtxImpl html fm fs =
   { wrap ::
       forall msg sta a
-       . DataUiItf html msg sta a
-      -> DataUiItf html (fm msg) (fs sta) a
+       . DataUiInterface html msg sta a
+      -> DataUiInterface html (fm msg) (fs sta) a
   }
 
 type Extract sta a = sta -> DataResult a
@@ -62,14 +62,14 @@ runDataUi
   :: forall srf fm fs msg sta a
    . DataUI srf fm fs msg sta a
   -> DataUICtx srf fm fs
-  -> DataUiItf srf msg sta a
+  -> DataUiInterface srf msg sta a
 runDataUi (DataUI dataUi) ctx = dataUi ctx
 
 runDataUiFinal
   :: forall srf fm fs msg sta a
    . DataUI srf fm fs msg sta a
   -> DataUICtx srf fm fs
-  -> DataUiItf srf (fm msg) (fs sta) a
+  -> DataUiInterface srf (fm msg) (fs sta) a
 runDataUiFinal dataUi ctx = runDataUi (applyWrap dataUi) ctx
 
 applyWrap
@@ -89,7 +89,7 @@ applyDataUi
      }
   -> DataUI html fm fs msg1 sta1 a1
   -> DataUI html fm fs msg2 sta2 a2
-applyDataUi r ui1 = DataUI \ctx -> DataUiItf
+applyDataUi r ui1 = DataUI \ctx -> DataUiInterface
   { name: r.name
   , view:
       r.view (NT.unwrap $ runDataUi ui1 ctx).view
@@ -110,9 +110,9 @@ type RefineDataResults a b =
 refineDataUi :: forall srf fm fs msg sta a b. RefineDataResults a b -> DataUI srf fm fs msg sta a -> DataUI srf fm fs msg sta b
 refineDataUi { typeName, refine, unrefine } (DataUI mkDataUi) = DataUI \ctx ->
   let
-    DataUiItf dataUi = mkDataUi ctx
+    DataUiInterface dataUi = mkDataUi ctx
   in
-    DataUiItf
+    DataUiInterface
       { extract: dataUi.extract >=> refine
       , init: lcmap (map unrefine) dataUi.init
       , name: typeName
@@ -120,8 +120,8 @@ refineDataUi { typeName, refine, unrefine } (DataUI mkDataUi) = DataUI \ctx ->
       , view: dataUi.view
       }
 
-dataUiItfToUI :: forall html msg sta a. DataUiItf html msg sta a -> MVC.UI html msg sta
-dataUiItfToUI (DataUiItf dataUi) =
+dataUiInterfaceToUI :: forall html msg sta a. DataUiInterface html msg sta a -> MVC.UI html msg sta
+dataUiInterfaceToUI (DataUiInterface dataUi) =
   { init: dataUi.init Nothing
   , update: dataUi.update
   , view: dataUi.view
@@ -136,5 +136,5 @@ unDataUICtx (DataUICtx impl) = impl
 
 derive instance Newtype (DataUI srf fm fs msg sta a) _
 
-derive instance Newtype (DataUiItf srf msg sta a) _
+derive instance Newtype (DataUiInterface srf msg sta a) _
 

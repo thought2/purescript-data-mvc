@@ -6,7 +6,7 @@ module DataMVC.ApplyCtx
   ) where
 
 import Data.Symbol (class IsSymbol)
-import DataMVC.Types.DataUI (DataUI, DataUICtx, DataUiItf, applyWrap, runDataUi)
+import DataMVC.Types.DataUI (DataUI, DataUICtx, DataUiInterface, applyWrap, runDataUi)
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList)
 import Prim.RowList as RL
@@ -58,7 +58,7 @@ instance ApplyCtxRL RL.Nil a datauis ()
 
 instance
   ( ApplyCtxRL rl' (DataUICtx srf fm fs) datauis uis'
-  , Row.Cons sym (DataUiItf srf (fm msg) (fs sta) a) uis' uis
+  , Row.Cons sym (DataUiInterface srf (fm msg) (fs sta) a) uis' uis
   , Row.Cons sym (DataUI srf fm fs msg sta a) datauisx datauis
   , IsSymbol sym
   , Row.Lacks sym uis'
@@ -76,7 +76,7 @@ instance
     dataui' :: DataUI srf fm fs (fm msg) (fs sta) a
     dataui' = applyWrap dataui
 
-    ui :: DataUiItf srf (fm msg) (fs sta) a
+    ui :: DataUiInterface srf (fm msg) (fs sta) a
     ui = runDataUi dataui' ctx
 
     tail :: { | uis' }

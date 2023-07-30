@@ -1,7 +1,7 @@
-module DataMVC.Record.DataUiItf
+module DataMVC.Record.DataUiInterface
   ( FnRecordGet
-  , class DataUiItfRecord
-  , dataUiItfRecord
+  , class DataUiInterfaceRecord
+  , dataUiInterfaceRecord
   , class MapProp
   , mapProp
   ) where
@@ -15,7 +15,7 @@ import Data.Symbol (class IsSymbol)
 import Heterogeneous.Mapping (class HMap, class Mapping, hmap)
 import DataMVC.Record.Extract (class ExtractRecord, extractRecord)
 import DataMVC.Record.Init (class InitRecord, initRecord)
-import DataMVC.Types.DataUI (DataUiItf(..))
+import DataMVC.Types.DataUI (DataUiInterface(..))
 import DataMVC.Types.DataError (DataResult)
 import MVC.Record (class UpdateRecord, class ViewRecord, RecordMsg, RecordState, updateRecord, viewRecord)
 import MVC.Record.UI (UIRecordProps)
@@ -24,17 +24,17 @@ import Record as Record
 import Type.Proxy (Proxy(..))
 
 class
-  DataUiItfRecord
+  DataUiInterfaceRecord
     (uis :: Row Type)
     (srf :: Type -> Type)
     (rmsg :: Row Type)
     (rsta :: Row Type)
     (r :: Row Type)
   where
-  dataUiItfRecord
+  dataUiInterfaceRecord
     :: UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
     -> Record uis
-    -> DataUiItf srf (RecordMsg rmsg) (RecordState rsta) (Record r)
+    -> DataUiInterface srf (RecordMsg rmsg) (RecordState rsta) (Record r)
 
 instance
   ( MapProp "extract" uis extracts
@@ -47,13 +47,13 @@ instance
   , ViewRecord srf views rmsg rsta
   , ExtractRecord extracts rsta r
   ) =>
-  DataUiItfRecord uis srf rmsg rsta r
+  DataUiInterfaceRecord uis srf rmsg rsta r
   where
-  dataUiItfRecord
+  dataUiInterfaceRecord
     :: UIRecordProps srf (RecordMsg rmsg) (RecordState rsta)
     -> Record uis
-    -> DataUiItf srf (RecordMsg rmsg) (RecordState rsta) (Record r)
-  dataUiItfRecord props uis = DataUiItf { init, update, view, extract, name }
+    -> DataUiInterface srf (RecordMsg rmsg) (RecordState rsta) (Record r)
+  dataUiInterfaceRecord props uis = DataUiInterface { init, update, view, extract, name }
 
     where
     -- Fields

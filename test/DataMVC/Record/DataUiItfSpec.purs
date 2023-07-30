@@ -1,16 +1,16 @@
-module Test.DataMVC.Record.DataUiItfSpec
+module Test.DataMVC.Record.DataUiInterfaceSpec
   ( spec
   ) where
 
 import Prelude
 
-import DataMVC.Record.DataUiItf as ME
-import DataMVC.Types (DataUiItf)
+import DataMVC.Record.DataUiInterface as ME
+import DataMVC.Types (DataUiInterface)
 import MVC.Record (RecordMsg, RecordState)
 import Test.DataMVC.TestTypes (HTML, M1, M2, M3, S1, S2, S3, T1, T2, T3)
 import Test.Spec (Spec, describe, it)
 
-testDataUiItfRecord
+testDataUiInterfaceRecord
   :: { viewEntries ::
          Array
            { key :: String
@@ -32,11 +32,11 @@ testDataUiItfRecord
               )
      }
   -> Record
-       ( field1 :: DataUiItf HTML M1 S1 T1
-       , field2 :: DataUiItf HTML M2 S2 T2
-       , field3 :: DataUiItf HTML M3 S3 T3
+       ( field1 :: DataUiInterface HTML M1 S1 T1
+       , field2 :: DataUiInterface HTML M2 S2 T2
+       , field3 :: DataUiInterface HTML M3 S3 T3
        )
-  -> DataUiItf HTML
+  -> DataUiInterface HTML
        ( RecordMsg
            ( field1 :: M1
            , field2 :: M2
@@ -55,10 +55,10 @@ testDataUiItfRecord
            , field3 :: T3
            )
        )
-testDataUiItfRecord = ME.dataUiItfRecord
+testDataUiInterfaceRecord = ME.dataUiInterfaceRecord
 
 spec :: Spec Unit
 spec = do
-  describe "DataMVC.Record.DataUiItf" do
+  describe "DataMVC.Record.DataUiInterface" do
     it "should compile" do
-      void $ pure testDataUiItfRecord
+      void $ pure testDataUiInterfaceRecord
