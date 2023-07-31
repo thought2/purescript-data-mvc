@@ -1,0 +1,36 @@
+package:
+  dependencies:
+    - arrays
+    - bifunctors
+    - mvc
+    - either
+    - heterogeneous
+    - maybe
+    - newtype
+    - prelude
+    - profunctor
+    - record
+    - variant
+  name: data-mvc
+  test:
+    dependencies:
+      - spec-discovery
+      - aff
+      - spec
+      - strings
+      - typelevel-prelude
+      - effect
+      - identity
+    main: Test.Main
+
+  publish:
+    version: 0.0.1
+    license: BSD-3-Clause
+    location:
+      githubOwner: thought2
+      githubRepo: purescript-data-mvc
+
+workspace:
+  extra_packages: {}
+  package_set:
+    registry: 31.3.0
